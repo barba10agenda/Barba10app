@@ -1,0 +1,122 @@
+{
+  "entities": {
+    "UserAccount": {
+      "title": "UserAccount",
+      "description": "Registered user profile and role",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "email": { "type": "string" },
+        "phone": { "type": "string" },
+        "role": { "type": "string", "enum": ["client", "admin"] }
+      },
+      "required": ["id", "name", "email", "role"]
+    },
+    "Appointment": {
+      "title": "Appointment",
+      "description": "Booked service session",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "clientId": { "type": "string" },
+        "clientName": { "type": "string" },
+        "clientEmail": { "type": "string" },
+        "clientPhone": { "type": "string" },
+        "serviceId": { "type": "string" },
+        "serviceName": { "type": "string" },
+        "servicePrice": { "type": "number" },
+        "serviceDuration": { "type": "number" },
+        "barberId": { "type": "string" },
+        "barberName": { "type": "string" },
+        "date": { "type": "string" },
+        "timeSlot": { "type": "string" },
+        "beverage": { "type": "string" },
+        "notes": { "type": "string" },
+        "status": { "type": "string", "enum": ["confirmado", "pendente", "concluido", "cancelado"] },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["clientId", "clientName", "barberId", "date", "timeSlot", "status"]
+    },
+    "Service": {
+      "title": "Service",
+      "description": "Service offered by barbershop",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "price": { "type": "number" },
+        "durationMinutes": { "type": "number" },
+        "description": { "type": "string" },
+        "category": { "type": "string", "enum": ["corte", "barba", "combo", "especial"] },
+        "popular": { "type": "boolean" },
+        "iconName": { "type": "string" }
+      },
+      "required": ["name", "price", "durationMinutes", "category"]
+    },
+    "Barber": {
+      "title": "Barber",
+      "description": "Barbershop staff member",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "role": { "type": "string" },
+        "avatar": { "type": "string" },
+        "rating": { "type": "number" },
+        "specialties": { "type": "array" },
+        "status": { "type": "string", "enum": ["active", "away"] }
+      },
+      "required": ["name", "role", "status"]
+    },
+    "BlockedSlot": {
+      "title": "BlockedSlot",
+      "description": "Unavailable or blocked schedule time slot",
+      "type": "object",
+      "properties": {
+        "date": { "type": "string" },
+        "timeSlot": { "type": "string" },
+        "barberId": { "type": "string" }
+      },
+      "required": ["date", "timeSlot"]
+    },
+    "ShopConfig": {
+      "title": "ShopConfig",
+      "description": "Barbershop dynamic settings",
+      "type": "object",
+      "properties": {
+        "shopName": { "type": "string" },
+        "phone": { "type": "string" },
+        "address": { "type": "string" },
+        "instagram": { "type": "string" },
+        "openingHours": { "type": "string" }
+      }
+    }
+  },
+  "firestore": {
+    "/usuarios/{userId}": {
+      "schema": { "$ref": "#/entities/UserAccount" },
+      "description": "Users accounts and permissions"
+    },
+    "/agendamentos/{appointmentId}": {
+      "schema": { "$ref": "#/entities/Appointment" },
+      "description": "Real-time client appointments"
+    },
+    "/servicos/{serviceId}": {
+      "schema": { "$ref": "#/entities/Service" },
+      "description": "Services list"
+    },
+    "/profissionais/{barberId}": {
+      "schema": { "$ref": "#/entities/Barber" },
+      "description": "Barbers team"
+    },
+    "/horarios/{slotId}": {
+      "schema": { "$ref": "#/entities/BlockedSlot" },
+      "description": "Blocked time slots"
+    },
+    "/configuracoes/{configId}": {
+      "schema": { "$ref": "#/entities/ShopConfig" },
+      "description": "Global shop dynamic configuration"
+    }
+  }
+}

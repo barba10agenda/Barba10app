@@ -1,0 +1,6 @@
+{
+  "name": "Jadson Barber - Agendamento & Gestão",
+  "description": "Plataforma slim de agendamento interativo em formato de quiz e painel administrativo em tempo real para barbearia.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

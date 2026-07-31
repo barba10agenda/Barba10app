@@ -1,0 +1,64 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Global Helper functions
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    function isAdmin() {
+      return isSignedIn() && (
+        exists(/databases/$(database)/documents/usuarios/$(request.auth.uid)) &&
+        get(/databases/$(database)/documents/usuarios/$(request.auth.uid)).data.role == 'admin'
+      );
+    }
+
+    // Default deny catch-all
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Usuarios collection
+    match /usuarios/{userId} {
+      allow read: if true;
+      allow create, update: if isSignedIn();
+      allow delete: if isAdmin();
+    }
+
+    // Agendamentos collection
+    match /agendamentos/{appointmentId} {
+      allow read: if true;
+      allow create, update: if true; // Public client booking & admin status updates
+      allow delete: if true;
+    }
+
+    // Servicos collection
+    match /servicos/{serviceId} {
+      allow read: if true;
+      allow write: if true;
+    }
+
+    // Profissionais collection
+    match /profissionais/{barberId} {
+      allow read: if true;
+      allow write: if true;
+    }
+
+    // Horarios collection
+    match /horarios/{slotId} {
+      allow read: if true;
+      allow write: if true;
+    }
+
+    // Configuracoes collection
+    match /configuracoes/{configId} {
+      allow read: if true;
+      allow write: if true;
+    }
+  }
+}
