@@ -25,9 +25,7 @@ service cloud.firestore {
 
     // Usuarios collection
     match /usuarios/{userId} {
-      allow read: if true;
-      allow create, update: if isSignedIn();
-      allow delete: if isAdmin();
+      allow read, write: if true;
     }
 
     // Agendamentos collection
