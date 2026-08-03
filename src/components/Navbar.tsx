@@ -30,7 +30,7 @@ export const Navbar: React.FC<NavbarProps> = ({
           onClick={() => setActiveView('home')}
           className="flex items-center gap-3 text-left transition-opacity hover:opacity-90 focus:outline-none"
         >
-          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br from-yellow-400 to-orange-600 text-black font-bold text-xl shadow-[0_0_20px_rgba(234,179,8,0.3)]">
+          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br from-yellow-300 via-yellow-400 to-yellow-500 text-black font-bold text-xl shadow-[0_0_20px_rgba(234,179,8,0.3)]">
             <Scissors className="h-5 w-5" />
           </div>
           <div>

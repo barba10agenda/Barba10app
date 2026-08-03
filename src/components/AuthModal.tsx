@@ -143,7 +143,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onLoginSu
           <div 
             onClick={handleScissorsClick}
             title="Barbearia Jadson Barber"
-            className="mx-auto flex h-12 w-12 cursor-pointer select-none items-center justify-center rounded-xl bg-gradient-to-br from-yellow-400 to-orange-600 text-black font-bold text-xl shadow-[0_0_20px_rgba(234,179,8,0.3)] active:scale-95 transition-transform"
+            className="mx-auto flex h-12 w-12 cursor-pointer select-none items-center justify-center rounded-xl bg-gradient-to-br from-yellow-300 via-yellow-400 to-yellow-500 text-black font-bold text-xl shadow-[0_0_20px_rgba(234,179,8,0.3)] active:scale-95 transition-transform"
           >
             <Scissors className="h-6 w-6" />
           </div>
@@ -212,7 +212,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onLoginSu
               type="button"
               onClick={handleGoogleAdminSignIn}
               disabled={isLoading}
-              className="w-full py-4 px-4 bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-400 hover:to-orange-400 text-black font-bold text-sm uppercase tracking-wider rounded-xl flex items-center justify-center gap-3 transition-all active:scale-[0.98] shadow-lg disabled:opacity-50"
+              className="w-full py-4 px-4 bg-gradient-to-r from-yellow-400 via-yellow-400 to-yellow-500 hover:from-yellow-300 hover:to-yellow-400 text-black font-bold text-sm uppercase tracking-wider rounded-xl flex items-center justify-center gap-3 transition-all active:scale-[0.98] shadow-lg disabled:opacity-50"
             >
               <svg className="h-5 w-5 fill-current" viewBox="0 0 24 24">
                 <path

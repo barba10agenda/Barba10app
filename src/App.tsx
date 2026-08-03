@@ -210,7 +210,7 @@ export default function App() {
           <div className="flex flex-col sm:flex-row items-start justify-between gap-6 border-b border-white/5 pb-6">
             {/* Top: Brand & Logo */}
             <div className="flex items-center gap-3 text-left">
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-yellow-400 to-orange-600 text-zinc-950 font-bold shadow-[0_0_20px_rgba(234,179,8,0.3)] shrink-0">
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-yellow-300 via-yellow-400 to-yellow-500 text-zinc-950 font-bold shadow-[0_0_20px_rgba(234,179,8,0.3)] shrink-0">
                 <Scissors className="h-5 w-5" />
               </div>
               <div className="text-left">

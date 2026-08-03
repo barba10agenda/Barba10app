@@ -21,7 +21,7 @@ export const HeroReception: React.FC<HeroReceptionProps> = ({
       <section className="relative overflow-hidden rounded-3xl border border-white/10 bg-[#0F0F0F] p-6 sm:p-10 lg:p-14 shadow-2xl">
         {/* Subtle gold glow background gradients */}
         <div className="pointer-events-none absolute -top-24 -right-24 h-96 w-96 rounded-full bg-yellow-500/10 blur-[100px]" />
-        <div className="pointer-events-none absolute -bottom-24 -left-24 h-64 w-64 rounded-full bg-orange-600/5 blur-[80px]" />
+        <div className="pointer-events-none absolute -bottom-24 -left-24 h-64 w-64 rounded-full bg-yellow-500/5 blur-[80px]" />
 
         <div className="relative z-10 max-w-3xl space-y-6">
           <div className="inline-flex items-center gap-2 rounded-full border border-yellow-500/30 bg-yellow-500/10 px-4 py-1.5 text-xs font-bold text-yellow-400 uppercase tracking-widest backdrop-blur-md">
@@ -30,7 +30,7 @@ export const HeroReception: React.FC<HeroReceptionProps> = ({
 
           <h1 className="font-syne text-5xl font-black uppercase leading-[0.95] text-white sm:text-6xl lg:text-7xl">
             O ESTILO QUE <br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-orange-500">VOCÊ MERECE.</span>
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 via-yellow-400 to-yellow-500">VOCÊ MERECE.</span>
           </h1>
 
           <p className="text-base text-gray-400 sm:text-lg leading-relaxed max-w-xl">
@@ -41,7 +41,7 @@ export const HeroReception: React.FC<HeroReceptionProps> = ({
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 pt-4">
             <button
               onClick={onStartQuiz}
-              className="px-10 py-5 bg-gradient-to-r from-yellow-400 via-yellow-500 to-orange-500 text-black font-black uppercase text-xl tracking-tighter hover:scale-105 active:scale-95 transition-transform rounded-sm shadow-[0_0_40px_rgba(234,179,8,0.2)] flex items-center justify-center gap-3"
+              className="px-10 py-5 bg-gradient-to-r from-yellow-300 via-yellow-400 to-yellow-500 text-black font-black uppercase text-xl tracking-tighter hover:scale-105 active:scale-95 transition-transform rounded-sm shadow-[0_0_40px_rgba(234,179,8,0.2)] flex items-center justify-center gap-3"
             >
               <Scissors className="h-6 w-6 text-black" />
               <span>Agendar Agora</span>
@@ -120,7 +120,7 @@ export const HeroReception: React.FC<HeroReceptionProps> = ({
               <div className="mt-6 flex items-center justify-between border-t border-white/5 pt-4">
                 <div>
                   <span className="text-[10px] uppercase tracking-widest text-gray-500 block font-bold">Investimento</span>
-                  <span className="font-syne text-xl font-black text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-orange-500">
+                  <span className="font-syne text-xl font-black text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 via-yellow-400 to-yellow-500">
                     R$ {service.price.toFixed(2).replace('.', ',')}
                   </span>
                 </div>
@@ -208,7 +208,7 @@ export const HeroReception: React.FC<HeroReceptionProps> = ({
       {/* Interactive Quiz Callout Banner */}
       <section className="relative overflow-hidden rounded-2xl border border-yellow-500/30 bg-[#0F0F0F] p-8 text-center sm:p-12 shadow-[0_0_50px_rgba(234,179,8,0.1)]">
         <div className="mx-auto max-w-xl space-y-5">
-          <div className="inline-flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-yellow-400 to-orange-600 text-black font-bold shadow-[0_0_20px_rgba(234,179,8,0.3)]">
+          <div className="inline-flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-yellow-300 via-yellow-400 to-yellow-500 text-black font-bold shadow-[0_0_20px_rgba(234,179,8,0.3)]">
             <Scissors className="h-6 w-6" />
           </div>
           <h2 className="font-syne text-3xl font-black uppercase tracking-tight text-white sm:text-4xl">
@@ -219,7 +219,7 @@ export const HeroReception: React.FC<HeroReceptionProps> = ({
           </p>
           <button
             onClick={onStartQuiz}
-            className="inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-yellow-400 via-yellow-500 to-orange-500 text-black font-black uppercase text-base tracking-tighter hover:scale-105 active:scale-95 transition-transform rounded-sm shadow-[0_0_30px_rgba(234,179,8,0.2)]"
+            className="inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-yellow-300 via-yellow-400 to-yellow-500 text-black font-black uppercase text-base tracking-tighter hover:scale-105 active:scale-95 transition-transform rounded-sm shadow-[0_0_30px_rgba(234,179,8,0.2)]"
           >
             <span>Iniciar Agendamento Agora</span>
             <ChevronRight className="h-5 w-5" />

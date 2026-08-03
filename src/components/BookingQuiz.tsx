@@ -280,7 +280,7 @@ export const BookingQuiz: React.FC<BookingQuizProps> = ({
         {/* Progress Bar */}
         <div className="relative h-1.5 w-full overflow-hidden rounded-full bg-white/5">
           <div
-            className="h-full bg-gradient-to-r from-yellow-400 to-orange-500 transition-all duration-300"
+            className="h-full bg-gradient-to-r from-yellow-300 via-yellow-400 to-yellow-500 transition-all duration-300"
             style={{ width: `${(step / 4) * 100}%` }}
           />
         </div>
