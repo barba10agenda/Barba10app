@@ -41,6 +41,7 @@ export default function App() {
   // Auth State
   const [currentUser, setCurrentUserState] = useState<UserAccount | null>(() => getCurrentUser());
   const [isAuthModalOpen, setIsAuthModalOpen] = useState<boolean>(false);
+  const [isAdminSidebarOpen, setIsAdminSidebarOpen] = useState<boolean>(false);
 
   // Store Data States
   const [appointments, setAppointments] = useState<Appointment[]>(() => getStoredAppointments());
@@ -136,6 +137,7 @@ export default function App() {
         openAuthModal={() => setIsAuthModalOpen(true)}
         handleLogout={handleLogout}
         realtimeActive={true}
+        onOpenAdminSidebar={() => setIsAdminSidebarOpen(true)}
       />
 
       {/* Main Container */}
@@ -186,6 +188,10 @@ export default function App() {
             onDeleteService={handleDeleteService}
             onSaveBarber={handleSaveBarber}
             realtimeActive={true}
+            currentUser={currentUser}
+            onLogout={handleLogout}
+            isSidebarOpen={isAdminSidebarOpen}
+            setIsSidebarOpen={setIsAdminSidebarOpen}
           />
         )}
 
@@ -201,13 +207,13 @@ export default function App() {
       {/* Footer */}
       <footer className="border-t border-white/10 bg-[#080808]/90 py-10 mt-auto">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 space-y-6">
-          <div className="flex flex-col items-center justify-center text-center gap-4 border-b border-white/5 pb-6">
+          <div className="flex flex-col sm:flex-row items-start justify-between gap-6 border-b border-white/5 pb-6">
             {/* Top: Brand & Logo */}
-            <div className="flex flex-col items-center justify-center text-center gap-2">
+            <div className="flex items-center gap-3 text-left">
               <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-yellow-400 to-orange-600 text-zinc-950 font-bold shadow-[0_0_20px_rgba(234,179,8,0.3)] shrink-0">
                 <Scissors className="h-5 w-5" />
               </div>
-              <div className="text-center">
+              <div className="text-left">
                 <span className="font-syne text-lg font-bold text-white tracking-wider uppercase block">
                   JADSON <span className="text-yellow-400">BARBER</span>
                 </span>
@@ -231,14 +237,6 @@ export default function App() {
 
           <div className="flex flex-col sm:flex-row items-center justify-between text-[11px] text-gray-500 gap-2">
             <p>© {new Date().getFullYear()} Jadson Barber. Todos os direitos reservados.</p>
-            <div className="flex items-center gap-4">
-              <button
-                onClick={() => setIsAuthModalOpen(true)}
-                className="text-yellow-500 hover:text-yellow-400 font-bold uppercase tracking-widest text-[10px] flex items-center gap-1.5 transition-colors"
-              >
-                <ShieldCheck className="h-3.5 w-3.5" /> Área Administrativa
-              </button>
-            </div>
           </div>
         </div>
       </footer>

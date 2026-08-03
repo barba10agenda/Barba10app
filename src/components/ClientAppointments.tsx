@@ -40,6 +40,33 @@ export const ClientAppointments: React.FC<ClientAppointmentsProps> = ({
         </div>
       </div>
 
+      {/* Profile Header Card */}
+      <div className="rounded-2xl border border-yellow-500/20 bg-gradient-to-r from-zinc-900 to-zinc-950 p-5 shadow-lg flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <div className="flex items-center gap-4">
+          <div className="flex h-12 w-12 items-center justify-center rounded-full bg-yellow-500/10 border border-yellow-500/30 text-yellow-400 font-bold text-lg">
+            <User className="h-6 w-6" />
+          </div>
+          <div>
+            <div className="flex items-center gap-2">
+              <h3 className="font-syne text-lg font-bold text-white">{currentUser.name}</h3>
+              {currentUser.email?.includes('gmail.com') && (
+                <span className="inline-flex items-center gap-1 rounded-full bg-white/10 px-2 py-0.5 text-[10px] font-bold text-yellow-400 border border-yellow-500/20">
+                  Google
+                </span>
+              )}
+            </div>
+            <p className="text-xs text-gray-400">{currentUser.email || 'Conta cadastrada'}</p>
+            {currentUser.phone && (
+              <p className="text-[11px] text-gray-500">{currentUser.phone}</p>
+            )}
+          </div>
+        </div>
+        <div className="text-xs text-gray-400 bg-white/5 rounded-xl px-3 py-2 border border-white/5">
+          <span className="text-[10px] text-yellow-400 font-bold uppercase tracking-widest block">Status do Perfil</span>
+          <span className="text-white font-bold">Cliente Conectado</span>
+        </div>
+      </div>
+
       {myBookings.length === 0 ? (
         <div className="rounded-3xl border border-zinc-800 bg-zinc-900/60 p-12 text-center space-y-4">
           <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-zinc-800 text-amber-400">
@@ -85,6 +112,17 @@ export const ClientAppointments: React.FC<ClientAppointmentsProps> = ({
               </div>
 
               <div className="space-y-2 text-xs">
+                <div className="grid grid-cols-2 gap-2 border-b border-zinc-800/60 pb-2">
+                  <div>
+                    <span className="text-zinc-500 text-[10px] block font-bold uppercase">Cliente</span>
+                    <strong className="text-white text-xs">{apt.clientName || currentUser.name}</strong>
+                  </div>
+                  <div>
+                    <span className="text-zinc-500 text-[10px] block font-bold uppercase">E-mail</span>
+                    <span className="text-zinc-400 text-xs truncate block">{apt.clientEmail || currentUser.email}</span>
+                  </div>
+                </div>
+
                 <div>
                   <span className="text-zinc-500 text-[10px] block">Serviço</span>
                   <strong className="text-white text-sm">{apt.serviceName}</strong>

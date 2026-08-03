@@ -163,8 +163,12 @@ export const HeroReception: React.FC<HeroReceptionProps> = ({
                 <div className="absolute inset-0 bg-gradient-to-t from-[#0F0F0F] via-transparent to-transparent" />
                 <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between">
                   <span className="flex items-center gap-1 rounded-md bg-black/80 backdrop-blur-md px-2 py-1 text-xs font-bold text-yellow-400 border border-yellow-500/30">
-                    <Star className="h-3.5 w-3.5 fill-yellow-400" />
-                    {barber.rating.toFixed(1)}
+                    <div className="flex items-center gap-0.5">
+                      {[1, 2, 3, 4, 5].map((s) => (
+                        <Star key={s} className="h-3 w-3 fill-yellow-400 text-yellow-400" />
+                      ))}
+                    </div>
+                    <span className="ml-0.5">{barber.rating.toFixed(1)}</span>
                   </span>
                   <span className="rounded-md bg-emerald-500/20 border border-emerald-500/40 px-2 py-0.5 text-[10px] font-bold text-emerald-300 uppercase tracking-widest">
                     DISPONÍVEL HOJE

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Scissors, User, LogOut, ShieldCheck, CalendarCheck2, Radio } from 'lucide-react';
+import { Scissors, User, LogOut, ShieldCheck, CalendarCheck2, Radio, Menu } from 'lucide-react';
 import { UserAccount } from '../types';
 
 interface NavbarProps {
@@ -9,6 +9,7 @@ interface NavbarProps {
   openAuthModal: () => void;
   handleLogout: () => void;
   realtimeActive: boolean;
+  onOpenAdminSidebar?: () => void;
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
@@ -18,9 +19,10 @@ export const Navbar: React.FC<NavbarProps> = ({
   openAuthModal,
   handleLogout,
   realtimeActive,
+  onOpenAdminSidebar,
 }) => {
   return (
-    <header className="sticky top-0 z-40 w-full border-b border-white/5 bg-[#0A0A0A]/90 backdrop-blur-md">
+    <header className="sticky top-0 z-50 w-full border-b border-white/5 bg-[#0A0A0A]/90 backdrop-blur-md">
       <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
         
         {/* Brand Logo */}
@@ -106,25 +108,35 @@ export const Navbar: React.FC<NavbarProps> = ({
           {/* User Logged or Discreet Login Button */}
           {currentUser ? (
             <div className="flex items-center gap-3">
-              <div className="hidden text-right sm:block">
+              <div className="text-right flex flex-col justify-center">
                 <p className="text-xs font-bold text-white leading-tight">{currentUser.name}</p>
                 <p className="text-[10px] text-yellow-400 uppercase tracking-widest font-bold">{currentUser.role === 'admin' ? 'Administrador' : 'Cliente'}</p>
               </div>
 
-              <button
-                onClick={handleLogout}
-                title="Sair da conta"
-                className="flex h-9 w-9 items-center justify-center rounded-lg border border-white/10 bg-white/5 text-gray-400 hover:border-red-500/40 hover:bg-red-500/10 hover:text-red-400 transition-colors"
-              >
-                <LogOut className="h-4 w-4" />
-              </button>
+              {currentUser.role === 'admin' && activeView === 'admin' && onOpenAdminSidebar ? (
+                <button
+                  onClick={onOpenAdminSidebar}
+                  title="Abrir Menu do Painel ADM"
+                  className="flex h-9 w-9 items-center justify-center rounded-lg border border-yellow-500/40 bg-yellow-500/10 text-yellow-400 hover:border-yellow-400 hover:bg-yellow-500/20 transition-all shadow-[0_0_15px_rgba(234,179,8,0.2)]"
+                >
+                  <Menu className="h-5 w-5" />
+                </button>
+              ) : (
+                <button
+                  onClick={handleLogout}
+                  title="Sair da conta"
+                  className="flex h-9 w-9 items-center justify-center rounded-lg border border-white/10 bg-white/5 text-gray-400 hover:border-red-500/40 hover:bg-red-500/10 hover:text-red-400 transition-colors"
+                >
+                  <LogOut className="h-4 w-4" />
+                </button>
+              )}
             </div>
           ) : (
             <button
               onClick={openAuthModal}
-              className="text-sm text-yellow-500/90 hover:text-yellow-400 font-medium px-4 py-1.5 border border-yellow-500/20 rounded-full transition-all uppercase tracking-wider flex items-center gap-1.5"
+              className="text-xs text-yellow-500/90 hover:text-yellow-400 font-medium px-3 py-1 border border-yellow-500/20 rounded-full transition-all uppercase tracking-wider flex items-center gap-1 hover:border-yellow-500/40"
             >
-              <User className="h-3.5 w-3.5 text-yellow-400" />
+              <User className="h-3 w-3 text-yellow-400" />
               <span>Entrar</span>
             </button>
           )}
@@ -132,42 +144,7 @@ export const Navbar: React.FC<NavbarProps> = ({
         </div>
       </div>
 
-      {/* Subnav for Mobile */}
-      <div className="flex border-t border-white/5 bg-[#0F0F0F] px-4 py-2 md:hidden justify-around text-xs font-bold uppercase tracking-wider">
-        <button
-          onClick={() => setActiveView('home')}
-          className={`px-2 py-1 ${activeView === 'home' ? 'text-yellow-400 font-bold' : 'text-gray-400'}`}
-        >
-          Início
-        </button>
 
-        <button
-          onClick={() => setActiveView('quiz')}
-          className={`flex items-center gap-1 px-2.5 py-1 rounded-md font-bold ${
-            activeView === 'quiz' ? 'bg-yellow-400 text-black' : 'text-yellow-400 bg-yellow-400/10'
-          }`}
-        >
-          Agendar
-        </button>
-
-        {currentUser && currentUser.role === 'client' && (
-          <button
-            onClick={() => setActiveView('my-appointments')}
-            className={`px-2 py-1 ${activeView === 'my-appointments' ? 'text-yellow-400 font-bold' : 'text-gray-400'}`}
-          >
-            Meus Agendamentos
-          </button>
-        )}
-
-        {currentUser && currentUser.role === 'admin' && (
-          <button
-            onClick={() => setActiveView('admin')}
-            className={`px-2 py-1 ${activeView === 'admin' ? 'text-yellow-400 font-bold' : 'text-gray-400'}`}
-          >
-            Painel Admin
-          </button>
-        )}
-      </div>
     </header>
   );
 };

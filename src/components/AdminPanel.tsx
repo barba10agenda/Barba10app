@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import { 
   ShieldCheck, Calendar, Clock, DollarSign, Users, Scissors, 
-  Check, X, AlertCircle, Plus, Edit3, Trash2, Phone, Search, Radio, Database, Sparkles
+  Check, X, AlertCircle, Plus, Edit3, Trash2, Phone, Search, Radio, Database, Sparkles,
+  Menu, LogOut, User, ChevronRight
 } from 'lucide-react';
-import { Appointment, Service, Barber, BlockedSlot, AppointmentStatus } from '../types';
+import { Appointment, Service, Barber, BlockedSlot, AppointmentStatus, UserAccount } from '../types';
 import { GENERATE_TIME_SLOTS } from '../services/store';
 
 interface AdminPanelProps {
@@ -18,6 +19,10 @@ interface AdminPanelProps {
   onDeleteService: (id: string) => void;
   onSaveBarber: (barber: Barber) => void;
   realtimeActive: boolean;
+  currentUser?: UserAccount | null;
+  onLogout?: () => void;
+  isSidebarOpen?: boolean;
+  setIsSidebarOpen?: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export const AdminPanel: React.FC<AdminPanelProps> = ({
@@ -32,7 +37,15 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
   onDeleteService,
   onSaveBarber,
   realtimeActive,
+  currentUser,
+  onLogout,
+  isSidebarOpen,
+  setIsSidebarOpen,
 }) => {
+  const [internalSidebarOpen, setInternalSidebarOpen] = useState(false);
+  const sidebarOpen = isSidebarOpen !== undefined ? isSidebarOpen : internalSidebarOpen;
+  const setSidebarOpen = setIsSidebarOpen || setInternalSidebarOpen;
+
   const [activeTab, setActiveTab] = useState<'agendamentos' | 'horarios' | 'servicos' | 'barbeiros' | 'firebase'>('agendamentos');
 
   // Filters for Appointments Tab
@@ -90,18 +103,30 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
           </p>
         </div>
 
-        {/* Real-Time Status Card */}
-        <div className="flex items-center gap-3 rounded-2xl border border-zinc-800 bg-zinc-900/90 px-4 py-3">
-          <div className="relative flex h-3 w-3">
-            <span className={`absolute inline-flex h-full w-full rounded-full ${realtimeActive ? 'bg-emerald-400 animate-ping' : 'bg-amber-400'}`} />
-            <span className={`relative inline-flex h-3 w-3 rounded-full ${realtimeActive ? 'bg-emerald-500' : 'bg-amber-500'}`} />
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+          {/* Real-Time Status Card */}
+          <div className="flex items-center gap-3 rounded-2xl border border-zinc-800 bg-zinc-900/90 px-4 py-3">
+            <div className="relative flex h-3 w-3">
+              <span className={`absolute inline-flex h-full w-full rounded-full ${realtimeActive ? 'bg-emerald-400 animate-ping' : 'bg-amber-400'}`} />
+              <span className={`relative inline-flex h-3 w-3 rounded-full ${realtimeActive ? 'bg-emerald-500' : 'bg-amber-500'}`} />
+            </div>
+            <div>
+              <span className="text-[10px] text-zinc-400 uppercase font-bold block">Base Centralizada</span>
+              <span className="text-xs font-extrabold text-white">
+                {realtimeActive ? 'Sincronização Ativa (Live)' : 'Conectado'}
+              </span>
+            </div>
           </div>
-          <div>
-            <span className="text-[10px] text-zinc-400 uppercase font-bold block">Base Centralizada</span>
-            <span className="text-xs font-extrabold text-white">
-              {realtimeActive ? 'Sincronização Ativa (Live)' : 'Conectado'}
-            </span>
-          </div>
+
+          {/* Menu Lateral Toggle Button */}
+          <button
+            onClick={() => setSidebarOpen(true)}
+            title="Abrir Menu Lateral do Painel"
+            className="flex items-center justify-center gap-2 rounded-2xl border border-amber-500/40 bg-amber-500/10 px-4 py-3 text-xs font-bold text-amber-400 hover:bg-amber-500/20 hover:border-amber-400 transition-all shadow-[0_0_20px_rgba(234,179,8,0.15)] cursor-pointer"
+          >
+            <Menu className="h-5 w-5" />
+            <span className="uppercase tracking-wider font-extrabold">Menu ADM</span>
+          </button>
         </div>
       </div>
 
@@ -275,6 +300,11 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                   <div className="space-y-1">
                     <div className="flex items-center gap-2">
                       <strong className="text-sm text-white font-syne">{apt.clientName}</strong>
+                      {apt.clientEmail && (
+                        <span className="text-[10px] text-zinc-400 bg-zinc-800 px-2 py-0.5 rounded border border-zinc-700">
+                          {apt.clientEmail}
+                        </span>
+                      )}
                       <span
                         className={`rounded-full px-2.5 py-0.5 text-[10px] font-bold uppercase ${
                           apt.status === 'confirmado'
@@ -639,6 +669,188 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
             <div>• <strong className="text-white">/services/{`{serviceId}`}</strong> : Catálogo de cortes e preços da barbearia</div>
             <div>• <strong className="text-white">/appointments/{`{appointmentId}`}</strong> : Agendamentos centralizados com listener snapshot real-time</div>
           </div>
+        </div>
+      )}
+
+      {/* Lateral Menu Overlay & Drawer (Menu Lateral ADM) */}
+      {sidebarOpen && (
+        <div className="fixed top-[73px] bottom-0 left-0 right-0 z-40 flex justify-start">
+          {/* Backdrop Blur */}
+          <div 
+            className="fixed top-[73px] bottom-0 left-0 right-0 bg-black/80 backdrop-blur-sm transition-opacity"
+            onClick={() => setSidebarOpen(false)}
+          />
+
+          {/* Left Drawer (Opens from left to right, up to 50% screen width, positioned below header) */}
+          <aside className="relative z-10 w-1/2 min-w-[260px] max-w-[50vw] h-[calc(100vh-73px)] bg-zinc-950 border-r border-amber-500/20 p-4 sm:p-6 flex flex-col justify-between shadow-2xl overflow-y-auto animate-in slide-in-from-left duration-300 ease-out">
+            <div className="space-y-6">
+              {/* Drawer Header */}
+              <div className="flex items-center justify-between border-b border-zinc-800/80 pb-4">
+                <div className="flex items-center gap-3">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-400 font-bold shadow-[0_0_15px_rgba(234,179,8,0.2)]">
+                    <ShieldCheck className="h-5 w-5" />
+                  </div>
+                  <div>
+                    <h2 className="font-syne text-sm font-bold text-white uppercase tracking-wider">
+                      Painel Administrativo
+                    </h2>
+                    <p className="text-[10px] font-bold text-amber-400 uppercase tracking-widest">Menu Lateral</p>
+                  </div>
+                </div>
+                <button
+                  onClick={() => setSidebarOpen(false)}
+                  className="rounded-xl border border-zinc-800 bg-zinc-900 p-2 text-zinc-400 hover:bg-zinc-800 hover:text-white transition-colors cursor-pointer"
+                >
+                  <X className="h-5 w-5" />
+                </button>
+              </div>
+
+              {/* User Account Info Card */}
+              {currentUser && (
+                <div className="rounded-2xl border border-amber-500/20 bg-gradient-to-r from-zinc-900 to-zinc-950 p-4 space-y-2">
+                  <div className="flex items-center justify-between">
+                    <span className="text-[10px] text-amber-400 font-bold uppercase tracking-widest flex items-center gap-1">
+                      <User className="h-3 w-3" /> Conta Administrador
+                    </span>
+                    <span className="text-[10px] bg-amber-400 text-black px-2 py-0.5 rounded-full font-black uppercase">
+                      Ativa
+                    </span>
+                  </div>
+                  <p className="text-sm font-bold text-white leading-tight">{currentUser.name}</p>
+                  <p className="text-xs text-zinc-400 truncate">{currentUser.email || 'admin@jadsonbarber.com'}</p>
+                </div>
+              )}
+
+              {/* Navigation Tabs Links */}
+              <div className="space-y-2">
+                <span className="text-[10px] font-extrabold text-zinc-500 uppercase tracking-widest block px-1">
+                  Módulos de Gestão
+                </span>
+
+                <nav className="space-y-1.5">
+                  <button
+                    onClick={() => { setActiveTab('agendamentos'); setSidebarOpen(false); }}
+                    className={`w-full flex items-center justify-between rounded-xl px-4 py-3 text-xs font-bold transition-all cursor-pointer ${
+                      activeTab === 'agendamentos'
+                        ? 'bg-amber-400 text-black shadow-lg shadow-amber-500/10 font-extrabold'
+                        : 'text-zinc-300 hover:bg-zinc-900 hover:text-white border border-transparent hover:border-zinc-800'
+                    }`}
+                  >
+                    <div className="flex items-center gap-3">
+                      <Calendar className="h-4 w-4" />
+                      <span>Agendamentos</span>
+                    </div>
+                    <span className={`text-[10px] px-2 py-0.5 rounded-full font-black ${
+                      activeTab === 'agendamentos' ? 'bg-black/20 text-black' : 'bg-zinc-800 text-amber-400'
+                    }`}>
+                      {appointments.length}
+                    </span>
+                  </button>
+
+                  <button
+                    onClick={() => { setActiveTab('horarios'); setSidebarOpen(false); }}
+                    className={`w-full flex items-center justify-between rounded-xl px-4 py-3 text-xs font-bold transition-all cursor-pointer ${
+                      activeTab === 'horarios'
+                        ? 'bg-amber-400 text-black shadow-lg shadow-amber-500/10 font-extrabold'
+                        : 'text-zinc-300 hover:bg-zinc-900 hover:text-white border border-transparent hover:border-zinc-800'
+                    }`}
+                  >
+                    <div className="flex items-center gap-3">
+                      <Clock className="h-4 w-4" />
+                      <span>Horários & Bloqueios</span>
+                    </div>
+                    <ChevronRight className="h-4 w-4 opacity-50" />
+                  </button>
+
+                  <button
+                    onClick={() => { setActiveTab('servicos'); setSidebarOpen(false); }}
+                    className={`w-full flex items-center justify-between rounded-xl px-4 py-3 text-xs font-bold transition-all cursor-pointer ${
+                      activeTab === 'servicos'
+                        ? 'bg-amber-400 text-black shadow-lg shadow-amber-500/10 font-extrabold'
+                        : 'text-zinc-300 hover:bg-zinc-900 hover:text-white border border-transparent hover:border-zinc-800'
+                    }`}
+                  >
+                    <div className="flex items-center gap-3">
+                      <Scissors className="h-4 w-4" />
+                      <span>Cortes & Preços</span>
+                    </div>
+                    <span className={`text-[10px] px-2 py-0.5 rounded-full font-black ${
+                      activeTab === 'servicos' ? 'bg-black/20 text-black' : 'bg-zinc-800 text-amber-400'
+                    }`}>
+                      {services.length}
+                    </span>
+                  </button>
+
+                  <button
+                    onClick={() => { setActiveTab('barbeiros'); setSidebarOpen(false); }}
+                    className={`w-full flex items-center justify-between rounded-xl px-4 py-3 text-xs font-bold transition-all cursor-pointer ${
+                      activeTab === 'barbeiros'
+                        ? 'bg-amber-400 text-black shadow-lg shadow-amber-500/10 font-extrabold'
+                        : 'text-zinc-300 hover:bg-zinc-900 hover:text-white border border-transparent hover:border-zinc-800'
+                    }`}
+                  >
+                    <div className="flex items-center gap-3">
+                      <Users className="h-4 w-4" />
+                      <span>Barbeiros</span>
+                    </div>
+                    <span className={`text-[10px] px-2 py-0.5 rounded-full font-black ${
+                      activeTab === 'barbeiros' ? 'bg-black/20 text-black' : 'bg-zinc-800 text-amber-400'
+                    }`}>
+                      {barbers.length}
+                    </span>
+                  </button>
+
+                  <button
+                    onClick={() => { setActiveTab('firebase'); setSidebarOpen(false); }}
+                    className={`w-full flex items-center justify-between rounded-xl px-4 py-3 text-xs font-bold transition-all cursor-pointer ${
+                      activeTab === 'firebase'
+                        ? 'bg-amber-400 text-black shadow-lg shadow-amber-500/10 font-extrabold'
+                        : 'text-zinc-300 hover:bg-zinc-900 hover:text-white border border-transparent hover:border-zinc-800'
+                    }`}
+                  >
+                    <div className="flex items-center gap-3">
+                      <Database className="h-4 w-4" />
+                      <span>Conexão Firebase</span>
+                    </div>
+                    <ChevronRight className="h-4 w-4 opacity-50" />
+                  </button>
+                </nav>
+              </div>
+
+              {/* Indicators Summary */}
+              <div className="rounded-2xl border border-zinc-800 bg-zinc-900/50 p-4 space-y-2">
+                <span className="text-[10px] font-extrabold text-zinc-500 uppercase tracking-widest block">
+                  Resumo do Dia
+                </span>
+                <div className="grid grid-cols-2 gap-2">
+                  <div className="bg-zinc-950 p-2.5 rounded-xl border border-zinc-800/80">
+                    <span className="text-[10px] text-zinc-500 block font-bold uppercase">Hoje</span>
+                    <strong className="text-white text-sm font-syne">{todayAppointments.length} clientes</strong>
+                  </div>
+                  <div className="bg-zinc-950 p-2.5 rounded-xl border border-zinc-800/80">
+                    <span className="text-[10px] text-zinc-500 block font-bold uppercase">Receita</span>
+                    <strong className="text-emerald-400 text-sm font-syne">R$ {totalRevenue.toFixed(0)}</strong>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Footer Area with Moved "Sair da Conta" Button */}
+            <div className="pt-6 border-t border-zinc-800 space-y-3">
+              {onLogout && (
+                <button
+                  onClick={() => {
+                    setSidebarOpen(false);
+                    onLogout();
+                  }}
+                  className="w-full flex items-center justify-center gap-2 rounded-xl border border-red-500/30 bg-red-500/10 hover:bg-red-500/20 py-3 text-xs font-bold text-red-400 hover:text-red-300 hover:border-red-500/50 transition-all uppercase tracking-wider cursor-pointer"
+                >
+                  <LogOut className="h-4 w-4" />
+                  <span>Sair da Conta</span>
+                </button>
+              )}
+            </div>
+          </aside>
         </div>
       )}
     </div>

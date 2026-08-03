@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { 
-  Scissors, UserCheck, Calendar as CalendarIcon, Clock, 
+  Scissors, UserCheck, Calendar as CalendarIcon, Clock, Star,
   ChevronRight, ChevronLeft, Check, AlertCircle, CheckCircle2, ShieldCheck, Plus, Trash2
 } from 'lucide-react';
 import { Service, Barber, UserAccount, Appointment, BlockedSlot } from '../types';
@@ -34,6 +34,25 @@ export const BookingQuiz: React.FC<BookingQuizProps> = ({
   // Step 3: Serviços (Múltiplos)
   // Step 4: Resumo e Confirmação
   const [step, setStep] = useState<number>(1);
+
+  // Element Refs for Auto-Scrolling
+  const quizTopRef = React.useRef<HTMLDivElement>(null);
+  const nextButtonStep1Ref = React.useRef<HTMLDivElement>(null);
+  const nextButtonStep2Ref = React.useRef<HTMLDivElement>(null);
+  const nextButtonStep3Ref = React.useRef<HTMLDivElement>(null);
+
+  const scrollToElement = (ref: React.RefObject<HTMLDivElement>, block: ScrollLogicalPosition = 'nearest') => {
+    setTimeout(() => {
+      ref.current?.scrollIntoView({ behavior: 'smooth', block });
+    }, 100);
+  };
+
+  const goToStep = (newStep: number) => {
+    setStep(newStep);
+    setTimeout(() => {
+      quizTopRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 100);
+  };
 
   // Date selection (default today YYYY-MM-DD)
   const todayDate = new Date();
@@ -235,7 +254,7 @@ export const BookingQuiz: React.FC<BookingQuizProps> = ({
   }
 
   return (
-    <div className="mx-auto max-w-3xl space-y-6">
+    <div ref={quizTopRef} className="mx-auto max-w-3xl space-y-6">
       
       {/* Quiz Progress Header */}
       <div className="rounded-2xl border border-white/10 bg-[#0F0F0F] p-5 backdrop-blur-md space-y-4">
@@ -292,6 +311,7 @@ export const BookingQuiz: React.FC<BookingQuizProps> = ({
                     onClick={() => {
                       setSelectedDate(item.iso);
                       setSelectedTimeSlot(''); // Reset slot on date change
+                      scrollToElement(nextButtonStep1Ref, 'nearest');
                     }}
                     className={`flex min-w-[75px] flex-col items-center rounded-xl border p-3 transition-all ${
                       isSelected
@@ -327,7 +347,10 @@ export const BookingQuiz: React.FC<BookingQuizProps> = ({
                   <button
                     key={time}
                     disabled={occupied}
-                    onClick={() => setSelectedTimeSlot(time)}
+                    onClick={() => {
+                      setSelectedTimeSlot(time);
+                      scrollToElement(nextButtonStep1Ref, 'nearest');
+                    }}
                     className={`flex items-center justify-center gap-1.5 rounded-lg border py-3 text-xs font-bold transition-all ${
                       occupied
                         ? 'cursor-not-allowed border-white/5 bg-white/[0.02] text-gray-600 line-through'
@@ -349,14 +372,14 @@ export const BookingQuiz: React.FC<BookingQuizProps> = ({
             </p>
           </div>
 
-          <div className="flex justify-end pt-4 border-t border-white/10">
+          <div ref={nextButtonStep1Ref} className="flex justify-end pt-4 border-t border-white/10">
             <button
               disabled={!selectedDate || !selectedTimeSlot}
-              onClick={() => setStep(2)}
-              className="flex items-center gap-2 rounded-lg bg-yellow-400 px-6 py-3 text-xs font-bold uppercase tracking-widest text-black shadow-lg hover:bg-yellow-300 disabled:opacity-40 transition-all"
+              onClick={() => goToStep(2)}
+              className="flex items-center gap-1.5 rounded-lg bg-yellow-400 px-4 py-2 text-xs font-bold uppercase tracking-wider text-black shadow-md hover:bg-yellow-300 disabled:opacity-40 transition-all"
             >
-              <span>PRÓXIMO: SELECIONAR BARBEIRO</span>
-              <ChevronRight className="h-4 w-4" />
+              <span>Próximo</span>
+              <ChevronRight className="h-3.5 w-3.5" />
             </button>
           </div>
         </div>
@@ -375,7 +398,10 @@ export const BookingQuiz: React.FC<BookingQuizProps> = ({
               return (
                 <div
                   key={barber.id}
-                  onClick={() => setSelectedBarber(barber)}
+                  onClick={() => {
+                    setSelectedBarber(barber);
+                    scrollToElement(nextButtonStep2Ref, 'nearest');
+                  }}
                   className={`cursor-pointer overflow-hidden rounded-xl border p-4 transition-all ${
                     isSelected
                       ? 'border-yellow-400/80 bg-yellow-500/10 shadow-[0_0_20px_rgba(234,179,8,0.15)]'
@@ -396,7 +422,14 @@ export const BookingQuiz: React.FC<BookingQuizProps> = ({
                   </div>
 
                   <div className="mt-3 space-y-1">
-                    <h3 className="font-syne text-sm font-bold text-white uppercase tracking-tight">{barber.name}</h3>
+                    <div className="flex items-center justify-between">
+                      <h3 className="font-syne text-sm font-bold text-white uppercase tracking-tight">{barber.name}</h3>
+                      <div className="flex items-center gap-0.5">
+                        {[1, 2, 3, 4, 5].map((star) => (
+                          <Star key={star} className="h-3 w-3 fill-yellow-400 text-yellow-400" />
+                        ))}
+                      </div>
+                    </div>
                     <p className="text-[10px] uppercase font-bold text-yellow-400 tracking-wider">{barber.role}</p>
                     <div className="flex flex-wrap gap-1 pt-1">
                       {barber.specialties.slice(0, 2).map((spec, i) => (
@@ -411,21 +444,21 @@ export const BookingQuiz: React.FC<BookingQuizProps> = ({
             })}
           </div>
 
-          <div className="flex items-center justify-between pt-4 border-t border-white/10">
+          <div ref={nextButtonStep2Ref} className="flex items-center justify-between pt-4 border-t border-white/10">
             <button
-              onClick={() => setStep(1)}
-              className="flex items-center gap-1.5 rounded-lg border border-white/10 bg-white/5 px-5 py-2.5 text-xs font-bold uppercase tracking-wider text-gray-300 hover:bg-white/10"
+              onClick={() => goToStep(1)}
+              className="flex items-center gap-1.5 rounded-lg border border-white/10 bg-white/5 px-4 py-2 text-xs font-bold uppercase tracking-wider text-gray-300 hover:bg-white/10"
             >
-              <ChevronLeft className="h-4 w-4" /> VOLTAR
+              <ChevronLeft className="h-3.5 w-3.5" /> Voltar
             </button>
 
             <button
               disabled={!selectedBarber}
-              onClick={() => setStep(3)}
-              className="flex items-center gap-2 rounded-lg bg-yellow-400 px-6 py-3 text-xs font-bold uppercase tracking-widest text-black shadow-lg hover:bg-yellow-300 disabled:opacity-40 transition-all"
+              onClick={() => goToStep(3)}
+              className="flex items-center gap-1.5 rounded-lg bg-yellow-400 px-4 py-2 text-xs font-bold uppercase tracking-wider text-black shadow-md hover:bg-yellow-300 disabled:opacity-40 transition-all"
             >
-              <span>PRÓXIMO: ESCOLHER SERVIÇOS</span>
-              <ChevronRight className="h-4 w-4" />
+              <span>Próximo</span>
+              <ChevronRight className="h-3.5 w-3.5" />
             </button>
           </div>
         </div>
@@ -517,45 +550,53 @@ export const BookingQuiz: React.FC<BookingQuizProps> = ({
           </div>
 
           {/* Dynamic Floating Selected Services Total */}
-          <div className="rounded-xl border border-white/10 bg-black/60 p-4 flex flex-col sm:flex-row items-center justify-between gap-3">
-            <div>
-              <span className="text-[10px] text-gray-500 uppercase font-bold tracking-widest block">
-                Total Acumulado ({selectedServices.length} {selectedServices.length === 1 ? 'item' : 'itens'})
-              </span>
-              <p className="text-xs text-gray-300 font-medium mt-0.5 line-clamp-1">
-                {combinedServiceNames}
-              </p>
-            </div>
-
-            <div className="flex items-center gap-4">
-              <div className="text-right">
-                <span className="text-[10px] text-gray-500 uppercase font-bold tracking-widest block">Duração Total</span>
-                <span className="text-xs text-white font-bold">{totalDuration} min</span>
+          <div className="rounded-xl border border-yellow-500/20 bg-gradient-to-r from-zinc-900 via-[#0D0D0D] to-black p-4 shadow-lg">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 items-center">
+              {/* Service name & item count */}
+              <div className="space-y-1">
+                <span className="text-[10px] text-gray-400 uppercase font-bold tracking-widest flex items-center gap-1.5">
+                  <span className="h-1.5 w-1.5 rounded-full bg-yellow-400"></span>
+                  Total Acumulado ({selectedServices.length} {selectedServices.length === 1 ? 'item' : 'itens'})
+                </span>
+                <p className="text-xs text-white font-bold truncate">
+                  {combinedServiceNames || 'Nenhum serviço'}
+                </p>
               </div>
-              <div className="text-right border-l border-white/10 pl-4">
-                <span className="text-[10px] text-gray-500 uppercase font-bold tracking-widest block">Valor Total</span>
-                <span className="font-syne text-lg font-black text-yellow-400">
+
+              {/* Total Duration */}
+              <div className="sm:text-center border-t sm:border-t-0 sm:border-l border-white/10 pt-2 sm:pt-0 sm:px-4">
+                <span className="text-[10px] text-gray-400 uppercase font-bold tracking-widest block">Duração Total</span>
+                <span className="text-xs text-white font-bold flex items-center sm:justify-center gap-1 mt-0.5">
+                  <Clock className="h-3.5 w-3.5 text-yellow-400 shrink-0" />
+                  {totalDuration} min
+                </span>
+              </div>
+
+              {/* Total Price */}
+              <div className="sm:text-right border-t sm:border-t-0 sm:border-l border-white/10 pt-2 sm:pt-0 sm:pl-4">
+                <span className="text-[10px] text-gray-400 uppercase font-bold tracking-widest block">Valor Total</span>
+                <span className="font-syne text-lg font-black text-yellow-400 block mt-0.5">
                   R$ {totalPrice.toFixed(2).replace('.', ',')}
                 </span>
               </div>
             </div>
           </div>
 
-          <div className="flex items-center justify-between pt-2 border-t border-white/10">
+          <div ref={nextButtonStep3Ref} className="flex items-center justify-between pt-2 border-t border-white/10">
             <button
-              onClick={() => setStep(2)}
-              className="flex items-center gap-1.5 rounded-lg border border-white/10 bg-white/5 px-5 py-2.5 text-xs font-bold uppercase tracking-wider text-gray-300 hover:bg-white/10"
+              onClick={() => goToStep(2)}
+              className="flex items-center gap-1.5 rounded-lg border border-white/10 bg-white/5 px-4 py-2 text-xs font-bold uppercase tracking-wider text-gray-300 hover:bg-white/10"
             >
-              <ChevronLeft className="h-4 w-4" /> VOLTAR
+              <ChevronLeft className="h-3.5 w-3.5" /> Voltar
             </button>
 
             <button
               disabled={selectedServiceIds.length === 0}
-              onClick={() => setStep(4)}
-              className="flex items-center gap-2 rounded-lg bg-yellow-400 px-6 py-3 text-xs font-bold uppercase tracking-widest text-black shadow-lg hover:bg-yellow-300 disabled:opacity-40 transition-all"
+              onClick={() => goToStep(4)}
+              className="flex items-center gap-1.5 rounded-lg bg-yellow-400 px-4 py-2 text-xs font-bold uppercase tracking-wider text-black shadow-md hover:bg-yellow-300 disabled:opacity-40 transition-all"
             >
-              <span>VER RESUMO E FINALIZAR</span>
-              <ChevronRight className="h-4 w-4" />
+              <span>Próximo</span>
+              <ChevronRight className="h-3.5 w-3.5" />
             </button>
           </div>
         </div>
@@ -614,6 +655,23 @@ export const BookingQuiz: React.FC<BookingQuizProps> = ({
               />
             </div>
 
+            {currentUser && (
+              <div className="border-t border-white/10 pt-3">
+                <div className="rounded-xl border border-yellow-500/30 bg-yellow-500/10 p-3.5 flex items-center justify-between">
+                  <div>
+                    <span className="text-[10px] text-yellow-400 font-bold uppercase tracking-widest block">
+                      Cliente Cadastrado
+                    </span>
+                    <p className="text-sm font-bold text-white mt-0.5">{currentUser.name}</p>
+                    <p className="text-xs text-gray-300">{currentUser.email}</p>
+                  </div>
+                  <span className="text-[10px] bg-yellow-400 text-black px-2.5 py-1 rounded-full font-extrabold uppercase tracking-wider">
+                    Google / Conta Ativa
+                  </span>
+                </div>
+              </div>
+            )}
+
             <div className="border-t border-white/10 pt-4 flex items-center justify-between">
               <span className="text-xs font-bold text-gray-300 uppercase tracking-wider">Valor Total a Pagar:</span>
               <span className="font-syne text-2xl font-black text-yellow-400">
@@ -662,7 +720,7 @@ export const BookingQuiz: React.FC<BookingQuizProps> = ({
 
           <div className="flex justify-start">
             <button
-              onClick={() => setStep(3)}
+              onClick={() => goToStep(3)}
               className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-gray-400 hover:text-white"
             >
               <ChevronLeft className="h-4 w-4" /> Voltar para Serviços
