@@ -1,12 +1,14 @@
 import React from 'react';
-import { Scissors, Clock, Star, Coffee, Shield, ChevronRight, Award, CheckCircle2 } from 'lucide-react';
+import { Scissors, Clock, Star, Shield, ChevronRight, Award, CheckCircle2 } from 'lucide-react';
 import { Service, Barber } from '../types';
+import { ShopConfig } from '../services/configuracoes';
 
 interface HeroReceptionProps {
   onStartQuiz: () => void;
   services: Service[];
   barbers: Barber[];
   onSelectServiceQuiz?: (serviceId: string) => void;
+  shopConfig?: ShopConfig;
 }
 
 export const HeroReception: React.FC<HeroReceptionProps> = ({
@@ -14,7 +16,26 @@ export const HeroReception: React.FC<HeroReceptionProps> = ({
   services,
   barbers,
   onSelectServiceQuiz,
+  shopConfig,
 }) => {
+  const badge = shopConfig?.heroBadge || 'Premium Experience';
+  const titleLine1 = shopConfig?.heroTitleLine1 || 'O ESTILO QUE';
+  const titleLine2 = shopConfig?.heroTitleLine2 || 'VOCÊ MERECE.';
+  const description = shopConfig?.heroDescription || 'Agende seu horário com o mestre Jadson. Cortes clássicos, degradês modernos, visagismo e barba com toalha quente em ambiente exclusivo.';
+  const ctaText = shopConfig?.ctaButtonText || 'Agendar Agora';
+  const pill1 = shopConfig?.highlightsPill1 || 'Atendimento Exclusivo';
+  const pill2 = shopConfig?.highlightsPill2 || 'Visagismo Slim Custom';
+  const pill3 = shopConfig?.highlightsPill3 || 'Toalha Quente & Vapor';
+  const pill4 = shopConfig?.highlightsPill4 || 'Pontualidade VIP';
+  const ctaSubtext = shopConfig?.ctaSubtext || 'Reserva simples & rápida';
+  const bannerBtnText = shopConfig?.bannerButtonText || 'Iniciar Agendamento Agora';
+  const servicesTitle = 'Cortes & Tratamentos Exclusivos';
+  const servicesSubtitle = 'Menu de Serviços';
+  const teamTitle = shopConfig?.teamSectionTitle || 'Barbeiros Especialistas';
+  const teamSubtitle = shopConfig?.teamSectionSubtitle || 'Equipe Jadson Barber';
+  const bannerTitle = shopConfig?.bannerTitle || 'Pronto para renovar seu visual?';
+  const bannerDesc = shopConfig?.bannerDescription || 'Inicie nosso Agendamento Slim em 4 etapas simples: escolha data e horário, barbeiro, serviços e confirme seu resumo.';
+
   return (
     <div className="space-y-16 pb-16">
       {/* Hero Header / Reception Banner */}
@@ -25,16 +46,16 @@ export const HeroReception: React.FC<HeroReceptionProps> = ({
 
         <div className="relative z-10 max-w-3xl space-y-6">
           <div className="inline-flex items-center gap-2 rounded-full border border-yellow-500/30 bg-yellow-500/10 px-4 py-1.5 text-xs font-bold text-yellow-400 uppercase tracking-widest backdrop-blur-md">
-            <span>Premium Experience</span>
+            <span>{badge}</span>
           </div>
 
           <h1 className="font-syne text-5xl font-black uppercase leading-[0.95] text-white sm:text-6xl lg:text-7xl">
-            O ESTILO QUE <br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 via-yellow-400 to-yellow-500">VOCÊ MERECE.</span>
+            {titleLine1} <br />
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 via-yellow-400 to-yellow-500">{titleLine2}</span>
           </h1>
 
           <p className="text-base text-gray-400 sm:text-lg leading-relaxed max-w-xl">
-            Agende seu horário com o mestre Jadson. Cortes clássicos, degradês modernos, visagismo e barba com toalha quente em ambiente exclusivo.
+            {description}
           </p>
 
           {/* Primary CTA Button */}
@@ -44,13 +65,13 @@ export const HeroReception: React.FC<HeroReceptionProps> = ({
               className="px-10 py-5 bg-gradient-to-r from-yellow-300 via-yellow-400 to-yellow-500 text-black font-black uppercase text-xl tracking-tighter hover:scale-105 active:scale-95 transition-transform rounded-sm shadow-[0_0_40px_rgba(234,179,8,0.2)] flex items-center justify-center gap-3"
             >
               <Scissors className="h-6 w-6 text-black" />
-              <span>Agendar Agora</span>
+              <span>{ctaText}</span>
               <ChevronRight className="h-6 w-6" />
             </button>
 
             <div className="flex items-center gap-2 px-2 text-xs text-gray-400 uppercase font-semibold tracking-wider">
               <Clock className="h-4 w-4 text-yellow-400" />
-              <span>Reserva simples & rápida</span>
+              <span>{ctaSubtext}</span>
             </div>
           </div>
 
@@ -58,19 +79,19 @@ export const HeroReception: React.FC<HeroReceptionProps> = ({
           <div className="grid grid-cols-2 gap-3 pt-6 border-t border-white/5 sm:grid-cols-4">
             <div className="flex items-center gap-2 text-xs text-gray-300 font-medium">
               <Scissors className="h-4 w-4 text-yellow-400 shrink-0" />
-              <span>Atendimento Exclusivo</span>
+              <span>{pill1}</span>
             </div>
             <div className="flex items-center gap-2 text-xs text-gray-300 font-medium">
               <Award className="h-4 w-4 text-yellow-400 shrink-0" />
-              <span>Visagismo Slim Custom</span>
+              <span>{pill2}</span>
             </div>
             <div className="flex items-center gap-2 text-xs text-gray-300 font-medium">
               <Shield className="h-4 w-4 text-yellow-400 shrink-0" />
-              <span>Toalha Quente & Vapor</span>
+              <span>{pill3}</span>
             </div>
             <div className="flex items-center gap-2 text-xs text-gray-300 font-medium">
               <CheckCircle2 className="h-4 w-4 text-yellow-400 shrink-0" />
-              <span>Pontualidade VIP</span>
+              <span>{pill4}</span>
             </div>
           </div>
         </div>
@@ -80,8 +101,8 @@ export const HeroReception: React.FC<HeroReceptionProps> = ({
       <section className="space-y-6">
         <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-2 border-b border-white/10 pb-4">
           <div>
-            <p className="text-xs font-bold text-yellow-500 uppercase tracking-[0.3em]">Menu de Serviços</p>
-            <h2 className="font-syne text-2xl font-black uppercase text-white sm:text-3xl">Cortes & Tratamentos Exclusivos</h2>
+            <p className="text-xs font-bold text-yellow-500 uppercase tracking-[0.3em]">{servicesSubtitle}</p>
+            <h2 className="font-syne text-2xl font-black uppercase text-white sm:text-3xl">{servicesTitle}</h2>
           </div>
           <button
             onClick={onStartQuiz}
@@ -144,8 +165,8 @@ export const HeroReception: React.FC<HeroReceptionProps> = ({
       {/* Barbers Team Showcase */}
       <section className="space-y-6">
         <div className="border-b border-white/10 pb-4">
-          <p className="text-xs font-bold text-yellow-500 uppercase tracking-[0.3em]">Equipe Jadson Barber</p>
-          <h2 className="font-syne text-2xl font-black uppercase text-white sm:text-3xl">Barbeiros Especialistas</h2>
+          <p className="text-xs font-bold text-yellow-500 uppercase tracking-[0.3em]">{teamSubtitle}</p>
+          <h2 className="font-syne text-2xl font-black uppercase text-white sm:text-3xl">{teamTitle}</h2>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -212,16 +233,16 @@ export const HeroReception: React.FC<HeroReceptionProps> = ({
             <Scissors className="h-6 w-6" />
           </div>
           <h2 className="font-syne text-3xl font-black uppercase tracking-tight text-white sm:text-4xl">
-            Pronto para renovar seu visual?
+            {bannerTitle}
           </h2>
           <p className="text-xs text-gray-400 sm:text-sm leading-relaxed">
-            Inicie nosso Agendamento Slim em 4 etapas simples: escolha data e horário, barbeiro, serviços e confirme seu resumo.
+            {bannerDesc}
           </p>
           <button
             onClick={onStartQuiz}
             className="inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-yellow-300 via-yellow-400 to-yellow-500 text-black font-black uppercase text-base tracking-tighter hover:scale-105 active:scale-95 transition-transform rounded-sm shadow-[0_0_30px_rgba(234,179,8,0.2)]"
           >
-            <span>Iniciar Agendamento Agora</span>
+            <span>{bannerBtnText}</span>
             <ChevronRight className="h-5 w-5" />
           </button>
         </div>

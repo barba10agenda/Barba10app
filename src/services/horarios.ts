@@ -15,12 +15,19 @@ export function generateSlotDocId(slot: BlockedSlot): string {
 export async function toggleBlockedSlot(slot: BlockedSlot, currentSlots: BlockedSlot[]): Promise<void> {
   const docId = generateSlotDocId(slot);
   const exists = currentSlots.some(
-    (b) => b.date === slot.date && b.timeSlot === slot.timeSlot && b.barberId === slot.barberId
+    (b) => b.date === slot.date && b.timeSlot === slot.timeSlot && (b.barberId || '') === (slot.barberId || '')
   );
 
   if (exists) {
     await deleteDocument(BLOCKED_SLOTS_COLLECTION, docId);
   } else {
-    await addDocument(BLOCKED_SLOTS_COLLECTION, slot, docId);
+    const cleanSlot: Record<string, any> = {
+      date: slot.date,
+      timeSlot: slot.timeSlot,
+    };
+    if (slot.barberId) cleanSlot.barberId = slot.barberId;
+    if (slot.reason) cleanSlot.reason = slot.reason;
+
+    await addDocument(BLOCKED_SLOTS_COLLECTION, cleanSlot, docId);
   }
 }

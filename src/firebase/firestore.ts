@@ -37,13 +37,31 @@ export function listenToCollection<T>(
   );
 }
 
+export function sanitizeData<T>(data: T): T {
+  if (data === null || data === undefined) return data;
+  if (typeof data !== 'object') return data;
+  
+  if (Array.isArray(data)) {
+    return data.map(sanitizeData) as unknown as T;
+  }
+
+  const clean: Record<string, any> = {};
+  for (const [key, value] of Object.entries(data as Record<string, any>)) {
+    if (value !== undefined) {
+      clean[key] = typeof value === 'object' && value !== null ? sanitizeData(value) : value;
+    }
+  }
+  return clean as T;
+}
+
 export async function addDocument<T extends object>(collectionName: string, data: T, customId?: string): Promise<string> {
   try {
+    const cleanData = sanitizeData(data);
     if (customId) {
-      await setDoc(doc(db, collectionName, customId), data);
+      await setDoc(doc(db, collectionName, customId), cleanData);
       return customId;
     } else {
-      const docRef = await addDoc(collection(db, collectionName), data);
+      const docRef = await addDoc(collection(db, collectionName), cleanData);
       return docRef.id;
     }
   } catch (error) {
@@ -53,7 +71,8 @@ export async function addDocument<T extends object>(collectionName: string, data
 
 export async function updateDocument<T extends object>(collectionName: string, docId: string, data: Partial<T>): Promise<void> {
   try {
-    await updateDoc(doc(db, collectionName, docId), data as any);
+    const cleanData = sanitizeData(data);
+    await updateDoc(doc(db, collectionName, docId), cleanData as any);
   } catch (error) {
     handleFirestoreError(error, OperationType.UPDATE, `${collectionName}/${docId}`);
   }

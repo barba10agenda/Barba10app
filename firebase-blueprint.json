@@ -91,6 +91,40 @@
         "instagram": { "type": "string" },
         "openingHours": { "type": "string" }
       }
+    },
+    "InsumoItem": {
+      "title": "InsumoItem",
+      "description": "Internal stock material for barbershop usage",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "category": { "type": "string" },
+        "quantity": { "type": "number" },
+        "minQuantity": { "type": "number" },
+        "unit": { "type": "string" },
+        "costPrice": { "type": "number" },
+        "notes": { "type": "string" }
+      },
+      "required": ["name", "quantity", "minQuantity", "category"]
+    },
+    "ProdutoVenda": {
+      "title": "ProdutoVenda",
+      "description": "Product for retail sale to clients",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "category": { "type": "string" },
+        "quantity": { "type": "number" },
+        "minQuantity": { "type": "number" },
+        "costPrice": { "type": "number" },
+        "salePrice": { "type": "number" },
+        "salesCommission": { "type": "number" },
+        "description": { "type": "string" },
+        "imageUrl": { "type": "string" }
+      },
+      "required": ["name", "quantity", "minQuantity", "costPrice", "salePrice", "category"]
     }
   },
   "firestore": {
@@ -117,6 +151,14 @@
     "/configuracoes/{configId}": {
       "schema": { "$ref": "#/entities/ShopConfig" },
       "description": "Global shop dynamic configuration"
+    },
+    "/insumos_barbearia/{insumoId}": {
+      "schema": { "$ref": "#/entities/InsumoItem" },
+      "description": "Internal stock supplies list"
+    },
+    "/produtos_venda_barbearia/{produtoId}": {
+      "schema": { "$ref": "#/entities/ProdutoVenda" },
+      "description": "Retail products list"
     }
   }
 }

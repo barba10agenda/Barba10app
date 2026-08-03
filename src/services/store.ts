@@ -81,7 +81,10 @@ export const DEFAULT_BARBERS: Barber[] = [
     avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=400',
     rating: 5.0,
     specialties: ['Degradê Navalhado', 'Barboterapia', 'Visagismo'],
-    status: 'active'
+    status: 'active',
+    lunchBreak: '12:00 - 13:00',
+    lunchStart: '12:00',
+    lunchEnd: '13:00'
   },
   {
     id: 'brb-2',
@@ -90,7 +93,10 @@ export const DEFAULT_BARBERS: Barber[] = [
     avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=400',
     rating: 4.9,
     specialties: ['Freestyle Hair Art', 'Barba Quadrada', 'Corte Clássico'],
-    status: 'active'
+    status: 'active',
+    lunchBreak: '12:00 - 13:00',
+    lunchStart: '12:00',
+    lunchEnd: '13:00'
   },
   {
     id: 'brb-3',
@@ -99,7 +105,10 @@ export const DEFAULT_BARBERS: Barber[] = [
     avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&q=80&w=400',
     rating: 4.8,
     specialties: ['Americano', 'Corte Infantil', 'Pigmentação'],
-    status: 'active'
+    status: 'active',
+    lunchBreak: '13:00 - 14:00',
+    lunchStart: '13:00',
+    lunchEnd: '14:00'
   }
 ];
 

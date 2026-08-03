@@ -58,5 +58,17 @@ service cloud.firestore {
       allow read: if true;
       allow write: if true;
     }
+
+    // Insumos collection
+    match /insumos_barbearia/{insumoId} {
+      allow read: if true;
+      allow write: if true;
+    }
+
+    // Produtos de Venda collection
+    match /produtos_venda_barbearia/{produtoId} {
+      allow read: if true;
+      allow write: if true;
+    }
   }
 }

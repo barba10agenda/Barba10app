@@ -5,6 +5,7 @@ import {
 } from 'lucide-react';
 import { Service, Barber, UserAccount, Appointment, BlockedSlot } from '../types';
 import { GENERATE_TIME_SLOTS } from '../services/store';
+import { isBarberInLunchBreak } from '../utils/lunchBreak';
 
 interface BookingQuizProps {
   services: Service[];
@@ -114,7 +115,11 @@ export const BookingQuiz: React.FC<BookingQuizProps> = ({
         (!blk.barberId || blk.barberId === selectedBarber?.id)
     );
 
-    return hasBooking || isBlocked;
+    const inLunchBreak = selectedBarber
+      ? isBarberInLunchBreak(timeSlot, selectedBarber.lunchBreak, selectedBarber.lunchStart, selectedBarber.lunchEnd)
+      : barbers.length > 0 && barbers.every((b) => isBarberInLunchBreak(timeSlot, b.lunchBreak, b.lunchStart, b.lunchEnd));
+
+    return hasBooking || isBlocked || inLunchBreak;
   };
 
   // Service toggle helper
@@ -395,26 +400,55 @@ export const BookingQuiz: React.FC<BookingQuizProps> = ({
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             {barbers.map((barber) => {
               const isSelected = selectedBarber?.id === barber.id;
+              const isLunch = isBarberInLunchBreak(
+                selectedTimeSlot,
+                barber.lunchBreak,
+                barber.lunchStart,
+                barber.lunchEnd
+              );
+              const isInactive = barber.status === 'inactive' || barber.status === 'away';
+              const isUnavailable = isLunch || isInactive;
+
               return (
                 <div
                   key={barber.id}
                   onClick={() => {
+                    if (isLunch) {
+                      alert(`O barbeiro ${barber.name} está indisponível às ${selectedTimeSlot} (Horário de almoço: ${barber.lunchBreak || '12:00 - 13:00'}).`);
+                      return;
+                    }
+                    if (isInactive) {
+                      alert(`O barbeiro ${barber.name} está indisponível na agenda.`);
+                      return;
+                    }
                     setSelectedBarber(barber);
                     scrollToElement(nextButtonStep2Ref, 'nearest');
                   }}
-                  className={`cursor-pointer overflow-hidden rounded-xl border p-4 transition-all ${
-                    isSelected
-                      ? 'border-yellow-400/80 bg-yellow-500/10 shadow-[0_0_20px_rgba(234,179,8,0.15)]'
-                      : 'border-white/10 bg-white/5 hover:border-white/20'
+                  className={`relative overflow-hidden rounded-xl border p-4 transition-all ${
+                    isUnavailable
+                      ? 'cursor-not-allowed border-red-500/30 bg-red-950/10 opacity-75 hover:opacity-90'
+                      : isSelected
+                      ? 'cursor-pointer border-yellow-400/80 bg-yellow-500/10 shadow-[0_0_20px_rgba(234,179,8,0.15)]'
+                      : 'cursor-pointer border-white/10 bg-white/5 hover:border-white/20'
                   }`}
                 >
                   <div className="relative h-32 w-full overflow-hidden rounded-lg bg-zinc-900">
                     <img
                       src={barber.avatar}
                       alt={barber.name}
-                      className="h-full w-full object-cover"
+                      className={`h-full w-full object-cover ${isUnavailable ? 'grayscale' : ''}`}
                     />
-                    {isSelected && (
+                    {isLunch && (
+                      <div className="absolute top-2 left-2 right-2 bg-red-600/90 text-white text-[10px] font-black uppercase tracking-wider py-1 px-2 rounded text-center backdrop-blur-sm border border-red-400/30 shadow-lg">
+                        Indisponível - Horário de almoço
+                      </div>
+                    )}
+                    {isInactive && !isLunch && (
+                      <div className="absolute top-2 left-2 right-2 bg-zinc-800/90 text-zinc-300 text-[10px] font-black uppercase tracking-wider py-1 px-2 rounded text-center backdrop-blur-sm border border-zinc-600">
+                        Indisponível
+                      </div>
+                    )}
+                    {isSelected && !isUnavailable && (
                       <div className="absolute top-2 right-2 flex h-6 w-6 items-center justify-center rounded-full bg-yellow-400 text-black font-bold">
                         <Check className="h-3.5 w-3.5 stroke-[3]" />
                       </div>
@@ -431,6 +465,14 @@ export const BookingQuiz: React.FC<BookingQuizProps> = ({
                       </div>
                     </div>
                     <p className="text-[10px] uppercase font-bold text-yellow-400 tracking-wider">{barber.role}</p>
+
+                    {isLunch && (
+                      <p className="text-[11px] font-extrabold text-red-400 mt-1 flex items-center gap-1 bg-red-500/10 p-1.5 rounded-md border border-red-500/20">
+                        <Clock className="h-3.5 w-3.5 shrink-0" />
+                        <span>Indisponível • Horário de almoço</span>
+                      </p>
+                    )}
+
                     <div className="flex flex-wrap gap-1 pt-1">
                       {barber.specialties.slice(0, 2).map((spec, i) => (
                         <span key={i} className="rounded bg-white/5 px-1.5 py-0.5 text-[9px] text-gray-400">
@@ -453,7 +495,12 @@ export const BookingQuiz: React.FC<BookingQuizProps> = ({
             </button>
 
             <button
-              disabled={!selectedBarber}
+              disabled={
+                !selectedBarber ||
+                selectedBarber.status === 'inactive' ||
+                selectedBarber.status === 'away' ||
+                isBarberInLunchBreak(selectedTimeSlot, selectedBarber.lunchBreak, selectedBarber.lunchStart, selectedBarber.lunchEnd)
+              }
               onClick={() => goToStep(3)}
               className="flex items-center gap-1.5 rounded-lg bg-yellow-400 px-4 py-2 text-xs font-bold uppercase tracking-wider text-black shadow-md hover:bg-yellow-300 disabled:opacity-40 transition-all"
             >

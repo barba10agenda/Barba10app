@@ -24,6 +24,7 @@ import {
   saveService,
   removeService,
   saveBarber,
+  removeBarber,
   toggleBlockedSlot
 } from './services/store';
 import { testConnection } from './firebase/testConnection';
@@ -119,6 +120,10 @@ export default function App() {
     await saveBarber(barberToSave);
   };
 
+  const handleDeleteBarber = async (id: string) => {
+    await removeBarber(id);
+  };
+
   // Start Quiz Handler
   const handleStartQuiz = (serviceId?: string) => {
     if (serviceId) setInitialQuizServiceId(serviceId);
@@ -149,6 +154,7 @@ export default function App() {
             services={services}
             barbers={barbers}
             onSelectServiceQuiz={(srvId) => handleStartQuiz(srvId)}
+            shopConfig={shopConfig}
           />
         )}
 
@@ -187,11 +193,14 @@ export default function App() {
             onSaveService={handleSaveService}
             onDeleteService={handleDeleteService}
             onSaveBarber={handleSaveBarber}
+            onDeleteBarber={handleDeleteBarber}
             realtimeActive={true}
             currentUser={currentUser}
             onLogout={handleLogout}
             isSidebarOpen={isAdminSidebarOpen}
             setIsSidebarOpen={setIsAdminSidebarOpen}
+            shopConfig={shopConfig}
+            onSaveShopConfig={saveShopConfig}
           />
         )}
 
@@ -215,28 +224,28 @@ export default function App() {
               </div>
               <div className="text-left">
                 <span className="font-syne text-lg font-bold text-white tracking-wider uppercase block">
-                  JADSON <span className="text-yellow-400">BARBER</span>
+                  {shopConfig?.shopName || 'JADSON BARBER'}
                 </span>
-                <p className="text-[10px] text-gray-400 uppercase tracking-widest">Atendimento Slim VIP</p>
+                <p className="text-[10px] text-gray-400 uppercase tracking-widest">{shopConfig?.shopTagline || 'Atendimento Slim VIP'}</p>
               </div>
             </div>
 
             {/* Below Title: Contact Data */}
             <div className="flex flex-col items-start gap-2 text-xs text-gray-300">
               <span className="flex items-center gap-2">
-                <MapPin className="h-4 w-4 text-yellow-400 shrink-0" /> Av. Principal, 1000 - Centro
+                <MapPin className="h-4 w-4 text-yellow-400 shrink-0" /> {shopConfig?.address || 'Av. Principal, 1000 - Centro'}
               </span>
               <span className="flex items-center gap-2">
-                <Phone className="h-4 w-4 text-yellow-400 shrink-0" /> (11) 99999-2525
+                <Phone className="h-4 w-4 text-yellow-400 shrink-0" /> {shopConfig?.phone || '(11) 99999-2525'}
               </span>
               <span className="flex items-center gap-2">
-                <Instagram className="h-4 w-4 text-yellow-400 shrink-0" /> @jadsonbarber
+                <Instagram className="h-4 w-4 text-yellow-400 shrink-0" /> {shopConfig?.instagram || '@jadsonbarber'}
               </span>
             </div>
           </div>
 
           <div className="flex flex-col sm:flex-row items-center justify-between text-[11px] text-gray-500 gap-2">
-            <p>© {new Date().getFullYear()} Jadson Barber. Todos os direitos reservados.</p>
+            <p>© {new Date().getFullYear()} {shopConfig?.shopName || 'Jadson Barber'}. Todos os direitos reservados.</p>
           </div>
         </div>
       </footer>

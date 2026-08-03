@@ -1,5 +1,5 @@
 import { UserAccount } from '../types';
-import { listenToCollection, addDocument, updateDocument } from '../firebase/firestore';
+import { listenToCollection, addDocument, updateDocument, deleteDocument } from '../firebase/firestore';
 
 export const USER_COLLECTION = 'usuarios';
 
@@ -13,4 +13,8 @@ export async function saveUserAccount(user: UserAccount): Promise<void> {
 
 export async function updateUserAccount(id: string, partial: Partial<UserAccount>): Promise<void> {
   await updateDocument<UserAccount>(USER_COLLECTION, id, partial);
+}
+
+export async function deleteUserAccount(id: string): Promise<void> {
+  await deleteDocument(USER_COLLECTION, id);
 }
