@@ -10,6 +10,7 @@ import { BookingQuiz } from './components/BookingQuiz';
 import { AuthModal } from './components/AuthModal';
 import { AdminPanel } from './components/AdminPanel';
 import { ClientAppointments } from './components/ClientAppointments';
+import { ClientDrawer } from './components/ClientDrawer';
 import { 
   getStoredAppointments,
   getStoredServices,
@@ -44,6 +45,7 @@ export default function App() {
   const [currentUser, setCurrentUserState] = useState<UserAccount | null>(() => getCurrentUser());
   const [isAuthModalOpen, setIsAuthModalOpen] = useState<boolean>(false);
   const [isAdminSidebarOpen, setIsAdminSidebarOpen] = useState<boolean>(false);
+  const [isClientDrawerOpen, setIsClientDrawerOpen] = useState<boolean>(false);
 
   // Store Data States
   const [appointments, setAppointments] = useState<Appointment[]>(() => getStoredAppointments());
@@ -154,6 +156,7 @@ export default function App() {
         handleLogout={handleLogout}
         realtimeActive={true}
         onOpenAdminSidebar={() => setIsAdminSidebarOpen(true)}
+        onOpenClientDrawer={() => setIsClientDrawerOpen(true)}
       />
 
       {/* Main Container */}
@@ -222,6 +225,18 @@ export default function App() {
         isOpen={isAuthModalOpen}
         onClose={() => setIsAuthModalOpen(false)}
         onLoginSuccess={handleLoginSuccess}
+      />
+
+      {/* Client Side Drawer / Menu Lateral */}
+      <ClientDrawer
+        isOpen={isClientDrawerOpen}
+        onClose={() => setIsClientDrawerOpen(false)}
+        currentUser={currentUser}
+        activeView={activeView}
+        setActiveView={setActiveView}
+        onLogout={handleLogout}
+        shopConfig={shopConfig}
+        appointmentCount={appointments.filter(a => currentUser && (a.clientEmail === currentUser.email || a.clientPhone === currentUser.phone) && a.status !== 'cancelado').length}
       />
 
       {/* Footer */}

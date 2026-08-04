@@ -10,6 +10,7 @@ interface NavbarProps {
   handleLogout: () => void;
   realtimeActive: boolean;
   onOpenAdminSidebar?: () => void;
+  onOpenClientDrawer?: () => void;
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
@@ -20,6 +21,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   handleLogout,
   realtimeActive,
   onOpenAdminSidebar,
+  onOpenClientDrawer,
 }) => {
   return (
     <header className="sticky top-0 z-50 w-full border-b border-white/5 bg-[#0A0A0A]/95 backdrop-blur-md">
@@ -98,6 +100,8 @@ export const Navbar: React.FC<NavbarProps> = ({
                 onClick={() => {
                   if (currentUser.role === 'admin') {
                     setActiveView('admin');
+                  } else if (onOpenClientDrawer) {
+                    onOpenClientDrawer();
                   }
                 }}
                 className="text-right flex flex-col justify-center cursor-pointer focus:outline-none min-w-0 max-w-[100px] sm:max-w-[180px]"
@@ -109,6 +113,18 @@ export const Navbar: React.FC<NavbarProps> = ({
                 </p>
               </button>
 
+              {/* Menu Button for Logged-In Client/User */}
+              {onOpenClientDrawer && (
+                <button
+                  onClick={onOpenClientDrawer}
+                  title="Abrir Menu Lateral"
+                  className="flex items-center gap-1.5 px-2.5 py-1.5 sm:px-3 sm:py-1.5 rounded-xl border border-yellow-500/40 bg-yellow-500/10 text-yellow-400 hover:border-yellow-400 hover:bg-yellow-500/20 transition-all shadow-[0_0_15px_rgba(234,179,8,0.2)] shrink-0 font-bold text-xs cursor-pointer"
+                >
+                  <Menu className="h-4 w-4" />
+                  <span className="hidden sm:inline uppercase tracking-wider text-[10px]">Menu</span>
+                </button>
+              )}
+
               {currentUser.role === 'admin' && activeView === 'admin' && onOpenAdminSidebar && (
                 <button
                   onClick={onOpenAdminSidebar}
@@ -118,14 +134,6 @@ export const Navbar: React.FC<NavbarProps> = ({
                   <Menu className="h-4 w-4 sm:h-5 sm:w-5" />
                 </button>
               )}
-
-              <button
-                onClick={handleLogout}
-                title="Sair da conta"
-                className="flex h-8 w-8 sm:h-9 sm:w-9 items-center justify-center rounded-lg border border-white/10 bg-white/5 text-gray-400 hover:border-red-500/40 hover:bg-red-500/10 hover:text-red-400 transition-colors shrink-0"
-              >
-                <LogOut className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
-              </button>
             </div>
           ) : (
             <button
@@ -140,59 +148,61 @@ export const Navbar: React.FC<NavbarProps> = ({
         </div>
       </div>
 
-      {/* Sub-bar / Quick Nav Links on Mobile */}
-      <div className="flex items-center justify-around border-t border-white/5 bg-[#080808] px-2 py-2 md:hidden">
-        <button
-          onClick={() => setActiveView('home')}
-          className={`flex flex-col items-center gap-0.5 text-[10px] font-bold uppercase tracking-wider px-3 py-1.5 rounded-lg transition-colors ${
-            activeView === 'home'
-              ? 'text-yellow-400 bg-yellow-500/10 border border-yellow-500/30'
-              : 'text-gray-400 hover:text-white'
-          }`}
-        >
-          <span>Início</span>
-        </button>
-
-        <button
-          onClick={() => setActiveView('quiz')}
-          className={`flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider px-3 py-1.5 rounded-lg border transition-all ${
-            activeView === 'quiz'
-              ? 'bg-yellow-400 text-black border-yellow-400 shadow-md font-extrabold'
-              : 'text-yellow-400 border-yellow-500/30 bg-yellow-500/10'
-          }`}
-        >
-          <Scissors className="h-3 w-3" />
-          <span>Agendar</span>
-        </button>
-
-        {currentUser && (
+      {/* Sub-bar / Quick Nav Links on Mobile (Hidden when inside Admin View) */}
+      {activeView !== 'admin' && (
+        <div className="flex items-center justify-around border-t border-white/5 bg-[#080808] px-2 py-2 md:hidden">
           <button
-            onClick={() => setActiveView('my-appointments')}
-            className={`flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider px-3 py-1.5 rounded-lg transition-colors ${
-              activeView === 'my-appointments'
+            onClick={() => setActiveView('home')}
+            className={`flex flex-col items-center gap-0.5 text-[10px] font-bold uppercase tracking-wider px-3 py-1.5 rounded-lg transition-colors ${
+              activeView === 'home'
                 ? 'text-yellow-400 bg-yellow-500/10 border border-yellow-500/30'
                 : 'text-gray-400 hover:text-white'
             }`}
           >
-            <CalendarCheck2 className="h-3 w-3 text-yellow-400" />
-            <span>Meus Agendamentos</span>
+            <span>Início</span>
           </button>
-        )}
 
-        {currentUser?.role === 'admin' && (
           <button
-            onClick={() => setActiveView('admin')}
-            className={`flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider px-3 py-1.5 rounded-lg transition-colors ${
-              activeView === 'admin'
-                ? 'text-amber-400 bg-amber-500/10 border border-amber-500/30 font-extrabold'
-                : 'text-amber-500/80 hover:text-amber-400'
+            onClick={() => setActiveView('quiz')}
+            className={`flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider px-3 py-1.5 rounded-lg border transition-all ${
+              activeView === 'quiz'
+                ? 'bg-yellow-400 text-black border-yellow-400 shadow-md font-extrabold'
+                : 'text-yellow-400 border-yellow-500/30 bg-yellow-500/10'
             }`}
           >
-            <ShieldCheck className="h-3 w-3 text-amber-400" />
-            <span>Painel ADM</span>
+            <Scissors className="h-3 w-3" />
+            <span>Agendar</span>
           </button>
-        )}
-      </div>
+
+          {currentUser && (
+            <button
+              onClick={() => setActiveView('my-appointments')}
+              className={`flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider px-3 py-1.5 rounded-lg transition-colors ${
+                activeView === 'my-appointments'
+                  ? 'text-yellow-400 bg-yellow-500/10 border border-yellow-500/30'
+                  : 'text-gray-400 hover:text-white'
+              }`}
+            >
+              <CalendarCheck2 className="h-3 w-3 text-yellow-400" />
+              <span>Meus Agendamentos</span>
+            </button>
+          )}
+
+          {currentUser?.role === 'admin' && (
+            <button
+              onClick={() => setActiveView('admin')}
+              className={`flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider px-3 py-1.5 rounded-lg transition-colors ${
+                activeView === 'admin'
+                  ? 'text-amber-400 bg-amber-500/10 border border-amber-500/30 font-extrabold'
+                  : 'text-amber-500/80 hover:text-amber-400'
+              }`}
+            >
+              <ShieldCheck className="h-3 w-3 text-amber-400" />
+              <span>Painel ADM</span>
+            </button>
+          )}
+        </div>
+      )}
 
     </header>
   );
