@@ -187,6 +187,15 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
   // Registered Users & Clients State
   const [registeredUsers, setRegisteredUsers] = useState<UserAccount[]>([]);
   const [clientSearchTerm, setClientSearchTerm] = useState('');
+  const [deletedClientKeys, setDeletedClientKeys] = useState<string[]>(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('jadson_deleted_client_keys');
+      if (saved) {
+        try { return JSON.parse(saved); } catch (e) { console.error(e); }
+      }
+    }
+    return [];
+  });
   const [selectedClientForModal, setSelectedClientForModal] = useState<{
     id: string;
     name: string;
@@ -416,7 +425,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
   registeredUsers.forEach(user => {
     if (user.role === 'client') {
       const key = (user.phone || user.email || user.name || user.id).trim().toLowerCase();
-      if (key) {
+      if (key && !deletedClientKeys.includes(user.id) && !deletedClientKeys.includes(key)) {
         clientMap.set(key, {
           id: user.id,
           name: user.name || 'Cliente Cadastrado',
@@ -436,6 +445,15 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
   appointments.forEach(apt => {
     const key = (apt.clientPhone || apt.clientEmail || apt.clientName || apt.clientId).trim().toLowerCase();
     if (!key) return;
+    if (
+      deletedClientKeys.includes(apt.clientId) ||
+      deletedClientKeys.includes(key) ||
+      (apt.clientPhone && deletedClientKeys.includes(apt.clientPhone.trim().toLowerCase())) ||
+      (apt.clientEmail && deletedClientKeys.includes(apt.clientEmail.trim().toLowerCase())) ||
+      (apt.clientName && deletedClientKeys.includes(apt.clientName.trim().toLowerCase()))
+    ) {
+      return;
+    }
 
     const existing = clientMap.get(key) || {
       id: apt.clientId || 'cli-' + Math.random().toString(36).substring(2, 8),
@@ -1150,7 +1168,27 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                         <button
                           onClick={async () => {
                             if (confirm(`⚠️ ATENÇÃO: Tem certeza que deseja excluir permanentemente o cliente "${client.name}"?\n\nEsta ação não poderá ser desfeita.`)) {
+                              const keysToRemove = [
+                                client.id,
+                                (client.phone || '').trim().toLowerCase(),
+                                (client.email || '').trim().toLowerCase(),
+                                (client.name || '').trim().toLowerCase(),
+                              ].filter(Boolean);
+
+                              const updatedDeleted = Array.from(new Set([...deletedClientKeys, ...keysToRemove]));
+                              setDeletedClientKeys(updatedDeleted);
+                              if (typeof window !== 'undefined') {
+                                localStorage.setItem('jadson_deleted_client_keys', JSON.stringify(updatedDeleted));
+                              }
+
                               setRegisteredUsers(prev => prev.filter(u => u.id !== client.id));
+
+                              if (client.appointments && client.appointments.length > 0) {
+                                client.appointments.forEach(apt => {
+                                  if (apt.id) onDeleteAppointment(apt.id);
+                                });
+                              }
+
                               try {
                                 await deleteUserAccount(client.id);
                               } catch (e) {

@@ -8,166 +8,13 @@ import { subscribeBlockedSlots, toggleBlockedSlot } from './horarios';
 import { subscribeShopConfig, saveShopConfig, DEFAULT_SHOP_CONFIG, ShopConfig } from './configuracoes';
 import { saveUserAccount } from './usuarios';
 
-// Default initial services
-export const DEFAULT_SERVICES: Service[] = [
-  {
-    id: 'srv-1',
-    name: 'Corte Slim Degradê',
-    price: 45,
-    durationMinutes: 30,
-    description: 'Corte moderno com acabamento na navalha e finalização com pomada de alta fixação.',
-    category: 'corte',
-    popular: true,
-    iconName: 'Scissors'
-  },
-  {
-    id: 'srv-2',
-    name: 'Barba Impart e Toalha Quente',
-    price: 35,
-    durationMinutes: 25,
-    description: 'Modelagem completa da barba com vaporizador de ozônio, toalha quente e óleos essenciais.',
-    category: 'barba',
-    popular: false,
-    iconName: 'Sparkles'
-  },
-  {
-    id: 'srv-3',
-    name: 'Combo Jadson Master (Corte + Barba)',
-    price: 70,
-    durationMinutes: 55,
-    description: 'A experiência completa: Corte estilizado + barba completa com tratamento VIP.',
-    category: 'combo',
-    popular: true,
-    iconName: 'Crown'
-  },
-  {
-    id: 'srv-4',
-    name: 'Pigmentação de Barba & Cabelo',
-    price: 40,
-    durationMinutes: 30,
-    description: 'Preenchimento de falhas e realce dos contornos com pigmento orgânico de longa duração.',
-    category: 'especial',
-    popular: false,
-    iconName: 'Palette'
-  },
-  {
-    id: 'srv-5',
-    name: 'Sobrancelha Navalhada',
-    price: 15,
-    durationMinutes: 15,
-    description: 'Design e alinhamento facial na navalha para um olhar impecável.',
-    category: 'especial',
-    popular: false,
-    iconName: 'Eye'
-  },
-  {
-    id: 'srv-6',
-    name: 'Tratamento Capilar VIP',
-    price: 50,
-    durationMinutes: 30,
-    description: 'Hidratação profunda, lavatório relaxante e massagem capilar revigorante.',
-    category: 'especial',
-    popular: false,
-    iconName: 'Zap'
-  }
-];
+// Default initial services (empty for live production)
+export const DEFAULT_SERVICES: Service[] = [];
 
-// Default initial barbers
-export const DEFAULT_BARBERS: Barber[] = [
-  {
-    id: 'brb-1',
-    name: 'Jadson Barber',
-    role: 'Master Barber & Founder',
-    avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=400',
-    rating: 5.0,
-    specialties: ['Degradê Navalhado', 'Barboterapia', 'Visagismo'],
-    status: 'active',
-    lunchBreak: '12:00 - 13:00',
-    lunchStart: '12:00',
-    lunchEnd: '13:00'
-  },
-  {
-    id: 'brb-2',
-    name: 'Marcos Silva',
-    role: 'Senior Barber',
-    avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=400',
-    rating: 4.9,
-    specialties: ['Freestyle Hair Art', 'Barba Quadrada', 'Corte Clássico'],
-    status: 'active',
-    lunchBreak: '12:00 - 13:00',
-    lunchStart: '12:00',
-    lunchEnd: '13:00'
-  },
-  {
-    id: 'brb-3',
-    name: 'Lucas Santos',
-    role: 'Fade Specialist',
-    avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&q=80&w=400',
-    rating: 4.8,
-    specialties: ['Americano', 'Corte Infantil', 'Pigmentação'],
-    status: 'active',
-    lunchBreak: '13:00 - 14:00',
-    lunchStart: '13:00',
-    lunchEnd: '14:00'
-  }
-];
+// Default initial barbers (empty for live production)
+export const DEFAULT_BARBERS: Barber[] = [];
 
-const todayStr = new Date().toISOString().split('T')[0];
-
-export const DEFAULT_APPOINTMENTS: Appointment[] = [
-  {
-    id: 'apt-101',
-    clientId: 'cli-001',
-    clientName: 'Carlos Eduardo',
-    clientEmail: 'carlos.edu@gmail.com',
-    clientPhone: '(11) 98765-4321',
-    serviceId: 'srv-3',
-    serviceName: 'Combo Jadson Master (Corte + Barba)',
-    servicePrice: 70,
-    serviceDuration: 55,
-    barberId: 'brb-1',
-    barberName: 'Jadson Barber',
-    date: todayStr,
-    timeSlot: '10:00',
-    notes: 'Degradê médio com risco no lado esquerdo',
-    status: 'confirmado',
-    createdAt: new Date().toISOString()
-  },
-  {
-    id: 'apt-102',
-    clientId: 'cli-002',
-    clientName: 'Roberto Mendes',
-    clientEmail: 'roberto.mendes@outlook.com',
-    clientPhone: '(11) 97123-8899',
-    serviceId: 'srv-1',
-    serviceName: 'Corte Slim Degradê',
-    servicePrice: 45,
-    serviceDuration: 30,
-    barberId: 'brb-2',
-    barberName: 'Marcos Silva',
-    date: todayStr,
-    timeSlot: '14:30',
-    status: 'pendente',
-    createdAt: new Date().toISOString()
-  },
-  {
-    id: 'apt-103',
-    clientId: 'cli-003',
-    clientName: 'Felipe Santana',
-    clientEmail: 'felipe.s@gmail.com',
-    clientPhone: '(11) 99111-2233',
-    serviceId: 'srv-2',
-    serviceName: 'Barba Impart e Toalha Quente',
-    servicePrice: 35,
-    serviceDuration: 25,
-    barberId: 'brb-1',
-    barberName: 'Jadson Barber',
-    date: todayStr,
-    timeSlot: '16:00',
-    status: 'concluido',
-    createdAt: new Date().toISOString()
-  }
-];
+export const DEFAULT_APPOINTMENTS: Appointment[] = [];
 
 export const GENERATE_TIME_SLOTS = (): string[] => {
   return [
@@ -184,36 +31,12 @@ let cachedBarbers: Barber[] = [];
 let cachedBlockedSlots: BlockedSlot[] = [];
 let cachedConfig: ShopConfig = DEFAULT_SHOP_CONFIG;
 
-// Seed Firestore if empty
+// Seed Firestore config if empty
 let isSeeded = false;
 export async function seedFirestoreIfEmpty() {
   if (isSeeded) return;
   isSeeded = true;
   try {
-    // Seed Services
-    const srvSnap = await getDocs(collection(db, 'servicos'));
-    if (srvSnap.empty) {
-      for (const s of DEFAULT_SERVICES) {
-        await saveService(s);
-      }
-    }
-
-    // Seed Barbers
-    const brbSnap = await getDocs(collection(db, 'profissionais'));
-    if (brbSnap.empty) {
-      for (const b of DEFAULT_BARBERS) {
-        await saveBarber(b);
-      }
-    }
-
-    // Seed Appointments
-    const aptSnap = await getDocs(collection(db, 'agendamentos'));
-    if (aptSnap.empty) {
-      for (const a of DEFAULT_APPOINTMENTS) {
-        await setDoc(doc(db, 'agendamentos', a.id), a);
-      }
-    }
-
     // Seed Config
     const cfgSnap = await getDocs(collection(db, 'configuracoes'));
     if (cfgSnap.empty) {
@@ -263,8 +86,8 @@ export const subscribeRealTime = (callback: () => void) => {
 
 // Data Getters
 export const getStoredAppointments = (): Appointment[] => cachedAppointments;
-export const getStoredServices = (): Service[] => cachedServices.length > 0 ? cachedServices : DEFAULT_SERVICES;
-export const getStoredBarbers = (): Barber[] => cachedBarbers.length > 0 ? cachedBarbers : DEFAULT_BARBERS;
+export const getStoredServices = (): Service[] => cachedServices;
+export const getStoredBarbers = (): Barber[] => cachedBarbers;
 export const getStoredBlockedSlots = (): BlockedSlot[] => cachedBlockedSlots;
 export const getStoredShopConfig = (): ShopConfig => cachedConfig;
 
