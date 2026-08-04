@@ -20,48 +20,48 @@ export const ClientAppointments: React.FC<ClientAppointmentsProps> = ({
 
   return (
     <div className="mx-auto max-w-4xl space-y-6 pb-12">
-      <div className="flex items-center justify-between border-b border-white/10 pb-4">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-white/10 pb-4">
         <div>
           <button
             onClick={onBackToHome}
-            className="mb-2 flex items-center gap-1 text-xs font-bold text-yellow-400 hover:text-yellow-300 uppercase tracking-widest"
+            className="mb-2 flex items-center gap-1 text-xs font-bold text-yellow-400 hover:text-yellow-300 uppercase tracking-widest cursor-pointer"
           >
             <ChevronLeft className="h-4 w-4" /> Voltar ao Início
           </button>
-          <h2 className="font-syne text-2xl font-black uppercase tracking-tight text-white sm:text-3xl">Meus Agendamentos</h2>
+          <h2 className="font-syne text-xl sm:text-3xl font-black uppercase tracking-tight text-white">Meus Agendamentos</h2>
           <p className="text-xs text-gray-400">
             Acompanhe seus horários agendados em tempo real na Barbearia Jadson Barber.
           </p>
         </div>
 
-        <div className="rounded-xl border border-white/10 bg-[#0F0F0F] p-3 text-right">
+        <div className="rounded-xl border border-white/10 bg-[#0F0F0F] px-4 py-2.5 text-left sm:text-right self-start sm:self-auto shrink-0">
           <span className="text-[10px] text-gray-500 block font-bold uppercase tracking-widest">Total</span>
           <span className="font-syne text-xl font-black text-yellow-400">{myBookings.length}</span>
         </div>
       </div>
 
       {/* Profile Header Card */}
-      <div className="rounded-2xl border border-yellow-500/20 bg-gradient-to-r from-zinc-900 to-zinc-950 p-5 shadow-lg flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-        <div className="flex items-center gap-4">
-          <div className="flex h-12 w-12 items-center justify-center rounded-full bg-yellow-500/10 border border-yellow-500/30 text-yellow-400 font-bold text-lg">
-            <User className="h-6 w-6" />
+      <div className="rounded-2xl border border-yellow-500/20 bg-gradient-to-r from-zinc-900 to-zinc-950 p-4 sm:p-5 shadow-lg flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <div className="flex items-center gap-3.5 min-w-0 flex-1">
+          <div className="flex h-11 w-11 sm:h-12 sm:w-12 items-center justify-center rounded-full bg-yellow-500/10 border border-yellow-500/30 text-yellow-400 font-bold text-lg shrink-0">
+            <User className="h-5 w-5 sm:h-6 sm:w-6" />
           </div>
-          <div>
-            <div className="flex items-center gap-2">
-              <h3 className="font-syne text-lg font-bold text-white">{currentUser.name}</h3>
+          <div className="min-w-0 flex-1">
+            <div className="flex flex-wrap items-center gap-2">
+              <h3 className="font-syne text-base sm:text-lg font-bold text-white truncate max-w-[220px] sm:max-w-none">{currentUser.name}</h3>
               {currentUser.email?.includes('gmail.com') && (
-                <span className="inline-flex items-center gap-1 rounded-full bg-white/10 px-2 py-0.5 text-[10px] font-bold text-yellow-400 border border-yellow-500/20">
+                <span className="inline-flex items-center gap-1 rounded-full bg-white/10 px-2 py-0.5 text-[10px] font-bold text-yellow-400 border border-yellow-500/20 shrink-0">
                   Google
                 </span>
               )}
             </div>
-            <p className="text-xs text-gray-400">{currentUser.email || 'Conta cadastrada'}</p>
+            <p className="text-xs text-gray-400 truncate">{currentUser.email || 'Conta cadastrada'}</p>
             {currentUser.phone && (
-              <p className="text-[11px] text-gray-500">{currentUser.phone}</p>
+              <p className="text-[11px] text-gray-500 truncate">{currentUser.phone}</p>
             )}
           </div>
         </div>
-        <div className="text-xs text-gray-400 bg-white/5 rounded-xl px-3 py-2 border border-white/5">
+        <div className="text-xs text-gray-400 bg-white/5 rounded-xl px-3 py-2 border border-white/5 w-full sm:w-auto text-left sm:text-right">
           <span className="text-[10px] text-yellow-400 font-bold uppercase tracking-widest block">Status do Perfil</span>
           <span className="text-white font-bold">Cliente Conectado</span>
         </div>

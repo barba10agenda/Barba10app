@@ -49,7 +49,7 @@ export const HeroReception: React.FC<HeroReceptionProps> = ({
             <span>{badge}</span>
           </div>
 
-          <h1 className="font-syne text-5xl font-black uppercase leading-[0.95] text-white sm:text-6xl lg:text-7xl">
+          <h1 className="font-syne text-3xl sm:text-5xl lg:text-7xl font-black uppercase leading-[1.05] sm:leading-[0.95] text-white break-words">
             {titleLine1} <br />
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 via-yellow-400 to-yellow-500">{titleLine2}</span>
           </h1>

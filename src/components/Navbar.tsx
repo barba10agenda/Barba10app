@@ -22,22 +22,22 @@ export const Navbar: React.FC<NavbarProps> = ({
   onOpenAdminSidebar,
 }) => {
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-white/5 bg-[#0A0A0A]/90 backdrop-blur-md">
-      <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
+    <header className="sticky top-0 z-50 w-full border-b border-white/5 bg-[#0A0A0A]/95 backdrop-blur-md">
+      <div className="mx-auto flex max-w-7xl items-center justify-between px-3 py-3 sm:px-6 lg:px-8 gap-2">
         
         {/* Brand Logo */}
         <button
           onClick={() => setActiveView('home')}
-          className="flex items-center gap-3 text-left transition-opacity hover:opacity-90 focus:outline-none"
+          className="flex items-center gap-2 sm:gap-3 text-left transition-opacity hover:opacity-90 focus:outline-none min-w-0 shrink"
         >
-          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br from-yellow-300 via-yellow-400 to-yellow-500 text-black font-bold text-xl shadow-[0_0_20px_rgba(234,179,8,0.3)]">
-            <Scissors className="h-5 w-5" />
+          <div className="flex h-9 w-9 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-yellow-300 via-yellow-400 to-yellow-500 text-black font-bold text-lg sm:text-xl shadow-[0_0_20px_rgba(234,179,8,0.3)]">
+            <Scissors className="h-4 w-4 sm:h-5 sm:w-5" />
           </div>
-          <div>
-            <div className="flex items-center gap-1.5 font-syne text-lg font-bold tracking-tighter text-white uppercase sm:text-xl">
+          <div className="min-w-0">
+            <div className="flex items-center gap-1 font-syne text-sm sm:text-lg font-bold tracking-tight text-white uppercase truncate">
               JADSON <span className="text-yellow-400">BARBER</span>
             </div>
-            <p className="text-[10px] font-bold tracking-widest text-gray-500 uppercase">
+            <p className="text-[9px] sm:text-[10px] font-bold tracking-wider text-gray-400 uppercase truncate">
               Slim Experience
             </p>
           </div>
@@ -83,7 +83,7 @@ export const Navbar: React.FC<NavbarProps> = ({
         </nav>
 
         {/* Right Action Controls */}
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2 sm:gap-3 shrink-0">
           
           {/* Live Sync Status */}
           <div className="hidden items-center gap-1.5 rounded-full border border-white/5 bg-white/5 px-3 py-1 text-[10px] font-bold tracking-widest uppercase text-gray-400 sm:flex">
@@ -93,18 +93,18 @@ export const Navbar: React.FC<NavbarProps> = ({
 
           {/* User Logged or Discreet Login Button */}
           {currentUser ? (
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-1.5 sm:gap-3">
               <button
                 onClick={() => {
                   if (currentUser.role === 'admin') {
                     setActiveView('admin');
                   }
                 }}
-                className="text-right flex flex-col justify-center cursor-pointer text-left focus:outline-none"
-                title={currentUser.role === 'admin' ? "Painel Geral" : undefined}
+                className="text-right flex flex-col justify-center cursor-pointer focus:outline-none min-w-0 max-w-[100px] sm:max-w-[180px]"
+                title={currentUser.name}
               >
-                <p className="text-xs font-bold text-white leading-tight">{currentUser.name}</p>
-                <p className="text-[10px] text-yellow-400 uppercase tracking-widest font-bold">
+                <p className="text-[11px] sm:text-xs font-bold text-white leading-tight truncate">{currentUser.name}</p>
+                <p className="text-[9px] sm:text-[10px] text-yellow-400 uppercase tracking-wider font-bold truncate">
                   {currentUser.role === 'admin' ? 'Administrador' : 'Cliente'}
                 </p>
               </button>
@@ -112,25 +112,25 @@ export const Navbar: React.FC<NavbarProps> = ({
               {currentUser.role === 'admin' && activeView === 'admin' && onOpenAdminSidebar && (
                 <button
                   onClick={onOpenAdminSidebar}
-                  title="Abrir Menu"
-                  className="flex h-9 w-9 items-center justify-center rounded-lg border border-yellow-500/40 bg-yellow-500/10 text-yellow-400 hover:border-yellow-400 hover:bg-yellow-500/20 transition-all shadow-[0_0_15px_rgba(234,179,8,0.2)]"
+                  title="Abrir Menu ADM"
+                  className="flex h-8 w-8 sm:h-9 sm:w-9 items-center justify-center rounded-lg border border-yellow-500/40 bg-yellow-500/10 text-yellow-400 hover:border-yellow-400 hover:bg-yellow-500/20 transition-all shadow-[0_0_15px_rgba(234,179,8,0.2)] shrink-0"
                 >
-                  <Menu className="h-5 w-5" />
+                  <Menu className="h-4 w-4 sm:h-5 sm:w-5" />
                 </button>
               )}
 
               <button
                 onClick={handleLogout}
                 title="Sair da conta"
-                className="flex h-9 w-9 items-center justify-center rounded-lg border border-white/10 bg-white/5 text-gray-400 hover:border-red-500/40 hover:bg-red-500/10 hover:text-red-400 transition-colors"
+                className="flex h-8 w-8 sm:h-9 sm:w-9 items-center justify-center rounded-lg border border-white/10 bg-white/5 text-gray-400 hover:border-red-500/40 hover:bg-red-500/10 hover:text-red-400 transition-colors shrink-0"
               >
-                <LogOut className="h-4 w-4" />
+                <LogOut className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
               </button>
             </div>
           ) : (
             <button
               onClick={openAuthModal}
-              className="text-xs text-yellow-500/90 hover:text-yellow-400 font-medium px-3 py-1 border border-yellow-500/20 rounded-full transition-all uppercase tracking-wider flex items-center gap-1 hover:border-yellow-500/40"
+              className="text-[11px] sm:text-xs text-yellow-500/90 hover:text-yellow-400 font-medium px-2.5 py-1 border border-yellow-500/20 rounded-full transition-all uppercase tracking-wider flex items-center gap-1 hover:border-yellow-500/40"
             >
               <User className="h-3 w-3 text-yellow-400" />
               <span>Entrar</span>
