@@ -28,6 +28,7 @@ import {
   toggleBlockedSlot
 } from './services/store';
 import { testConnection } from './firebase/testConnection';
+import { logoutUser } from './firebase/auth';
 import { ShopConfig, saveShopConfig } from './services/configuracoes';
 import { Appointment, Service, Barber, BlockedSlot, UserAccount, AppointmentStatus } from './types';
 import { Scissors, MapPin, Phone, Instagram, Clock, ShieldCheck, Sparkles } from 'lucide-react';
@@ -77,9 +78,19 @@ export default function App() {
     }
   };
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    try {
+      await logoutUser();
+    } catch (err) {
+      console.warn('Firebase logout notice:', err);
+    }
     setCurrentUserState(null);
     setCurrentUser(null);
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem('jadson_barber_user_v1');
+      localStorage.removeItem('jadson_barber_admin_account');
+    }
+    setIsAdminSidebarOpen(false);
     setActiveView('home');
   };
 

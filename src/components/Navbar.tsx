@@ -104,10 +104,12 @@ export const Navbar: React.FC<NavbarProps> = ({
                 title={currentUser.role === 'admin' ? "Painel Geral" : undefined}
               >
                 <p className="text-xs font-bold text-white leading-tight">{currentUser.name}</p>
-                <p className="text-[10px] text-yellow-400 uppercase tracking-widest font-bold">Cliente</p>
+                <p className="text-[10px] text-yellow-400 uppercase tracking-widest font-bold">
+                  {currentUser.role === 'admin' ? 'Administrador' : 'Cliente'}
+                </p>
               </button>
 
-              {currentUser.role === 'admin' && activeView === 'admin' && onOpenAdminSidebar ? (
+              {currentUser.role === 'admin' && activeView === 'admin' && onOpenAdminSidebar && (
                 <button
                   onClick={onOpenAdminSidebar}
                   title="Abrir Menu"
@@ -115,15 +117,15 @@ export const Navbar: React.FC<NavbarProps> = ({
                 >
                   <Menu className="h-5 w-5" />
                 </button>
-              ) : (
-                <button
-                  onClick={handleLogout}
-                  title="Sair da conta"
-                  className="flex h-9 w-9 items-center justify-center rounded-lg border border-white/10 bg-white/5 text-gray-400 hover:border-red-500/40 hover:bg-red-500/10 hover:text-red-400 transition-colors"
-                >
-                  <LogOut className="h-4 w-4" />
-                </button>
               )}
+
+              <button
+                onClick={handleLogout}
+                title="Sair da conta"
+                className="flex h-9 w-9 items-center justify-center rounded-lg border border-white/10 bg-white/5 text-gray-400 hover:border-red-500/40 hover:bg-red-500/10 hover:text-red-400 transition-colors"
+              >
+                <LogOut className="h-4 w-4" />
+              </button>
             </div>
           ) : (
             <button

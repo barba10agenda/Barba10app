@@ -3,7 +3,7 @@ import {
   ShieldCheck, Calendar, Clock, DollarSign, Users, Scissors, 
   Check, X, AlertCircle, Plus, Edit3, Trash2, Phone, Search, Radio, Database, Sparkles,
   Menu, LogOut, User, ChevronRight, Settings, Save, Layout, FileText, Building, LayoutDashboard, TrendingUp,
-  UserCheck, MessageCircle, Mail, Package, ShoppingBag, Tag, Box, Layers, AlertTriangle
+  UserCheck, MessageCircle, Mail, Package, ShoppingBag, Tag, Box, Layers, AlertTriangle, Upload, Image as ImageIcon
 } from 'lucide-react';
 import { Appointment, Service, Barber, BlockedSlot, AppointmentStatus, UserAccount, InsumoItem, ProdutoVenda } from '../types';
 import { GENERATE_TIME_SLOTS } from '../services/store';
@@ -15,6 +15,7 @@ import {
 } from '../services/estoque';
 import { EstoqueInsumosTab } from './EstoqueInsumosTab';
 import { ProdutosVendaTab } from './ProdutosVendaTab';
+import { compressImageFile } from '../utils/imageCompressor';
 
 export interface DaySchedule {
   id: string;
@@ -1995,15 +1996,16 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
 
           {/* Modal de Cadastro / Edição do Barbeiro */}
           {editingBarber && (
-            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 backdrop-blur-md overflow-y-auto">
-              <div className="w-full max-w-2xl rounded-3xl border border-amber-500/30 bg-zinc-950 p-6 sm:p-8 space-y-6 shadow-2xl my-8">
-                <div className="flex items-center justify-between border-b border-zinc-800 pb-4">
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-3 sm:p-4 backdrop-blur-md">
+              <div className="w-full max-w-2xl max-h-[90vh] flex flex-col rounded-3xl border border-amber-500/30 bg-zinc-950 p-5 sm:p-6 shadow-2xl">
+                {/* Header fixo */}
+                <div className="flex items-center justify-between border-b border-zinc-800 pb-4 shrink-0">
                   <div>
                     <h3 className="font-syne text-lg font-bold text-white flex items-center gap-2">
                       <Users className="h-5 w-5 text-amber-400" />
                       {editingBarber.id ? 'Editar Profissional' : 'Cadastrar Novo Barbeiro'}
                     </h3>
-                    <p className="text-xs text-zinc-400">Todos os campos são opcionais. Preencha conforme necessário.</p>
+                    <p className="text-xs text-zinc-400">Preencha os dados do barbeiro abaixo.</p>
                   </div>
 
                   <button
@@ -2014,257 +2016,298 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                   </button>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
-                  {/* Avatar / Foto */}
-                  <div className="md:col-span-2 flex items-center gap-4 bg-zinc-900/60 p-4 rounded-2xl border border-zinc-800">
-                    <img
-                      src={editingBarber.avatarUrl || editingBarber.avatar || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=200"}
-                      alt="Preview Foto"
-                      className="h-16 w-16 rounded-2xl object-cover border-2 border-amber-500/40 shrink-0"
-                    />
-                    <div className="flex-1 space-y-1">
-                      <label className="text-zinc-300 font-extrabold block">Foto (URL da Imagem)</label>
+                {/* Corpo com scroll interno */}
+                <div className="overflow-y-auto pr-1 py-4 flex-1 space-y-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+                    {/* Nome Completo - Destaque no topo */}
+                    <div className="md:col-span-2 bg-amber-500/10 p-4 rounded-2xl border border-amber-500/30">
+                      <label className="text-amber-400 font-extrabold block mb-1 text-sm">
+                        Nome Completo do Barbeiro <span className="text-amber-400">*</span>
+                      </label>
                       <input
-                        type="url"
-                        placeholder="https://exemplo.com/minha-foto.jpg"
-                        value={editingBarber.avatarUrl || editingBarber.avatar || ''}
-                        onChange={(e) => setEditingBarber({ ...editingBarber, avatarUrl: e.target.value, avatar: e.target.value })}
+                        type="text"
+                        placeholder="Digite aqui o nome completo do barbeiro..."
+                        value={editingBarber.name || ''}
+                        onChange={(e) => setEditingBarber({ ...editingBarber, name: e.target.value })}
+                        autoFocus
+                        className="w-full rounded-xl border border-amber-500/40 bg-zinc-900 p-3 text-white font-bold focus:border-amber-400 focus:outline-none text-sm"
+                      />
+                    </div>
+
+                    {/* Avatar / Foto do Dispositivo */}
+                    <div className="md:col-span-2 flex flex-col sm:flex-row items-start sm:items-center gap-4 bg-zinc-900/60 p-4 rounded-2xl border border-zinc-800">
+                      <img
+                        src={editingBarber.avatarUrl || editingBarber.avatar || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=200"}
+                        alt="Preview Foto"
+                        className="h-20 w-20 rounded-2xl object-cover border-2 border-amber-500/40 shrink-0 shadow-md"
+                      />
+                      <div className="flex-1 space-y-2">
+                        <label className="text-zinc-300 font-extrabold block text-xs">
+                          Foto do Barbeiro (Selecione do Dispositivo)
+                        </label>
+                        <p className="text-[11px] text-zinc-400">
+                          Escolha uma foto salva da galeria ou arquivos do seu dispositivo (celular/computador).
+                        </p>
+                        <div className="flex flex-wrap items-center gap-2 pt-1">
+                          <label className="cursor-pointer inline-flex items-center gap-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-black font-extrabold px-3.5 py-2 text-xs transition-colors shadow-lg shadow-amber-500/10 active:scale-95">
+                            <Upload className="h-4 w-4" />
+                            <span>{editingBarber.avatarUrl || editingBarber.avatar ? 'Alterar Foto do Dispositivo' : 'Escolher Foto do Dispositivo'}</span>
+                            <input
+                              type="file"
+                              accept="image/*"
+                              className="hidden"
+                              onChange={async (e) => {
+                                const file = e.target.files?.[0];
+                                if (file) {
+                                  if (file.size > 15 * 1024 * 1024) {
+                                    alert('⚠️ A imagem selecionada deve ter no máximo 15MB.');
+                                    return;
+                                  }
+                                  try {
+                                    const compressedBase64 = await compressImageFile(file, 400, 400, 0.75);
+                                    setEditingBarber(prev => prev ? { ...prev, avatarUrl: compressedBase64, avatar: compressedBase64 } : null);
+                                  } catch (err) {
+                                    console.error('Erro ao processar imagem:', err);
+                                    alert('Erro ao processar a imagem do dispositivo.');
+                                  }
+                                }
+                              }}
+                            />
+                          </label>
+                          {(editingBarber.avatarUrl || editingBarber.avatar) && (
+                            <button
+                              type="button"
+                              onClick={() => setEditingBarber({ ...editingBarber, avatarUrl: '', avatar: '' })}
+                              className="px-3 py-2 rounded-xl border border-zinc-700 bg-zinc-800 hover:bg-zinc-700 text-xs font-bold text-red-400 hover:text-red-300 transition-colors cursor-pointer"
+                            >
+                              Remover Foto
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Cargo / Função */}
+                    <div>
+                      <label className="text-zinc-300 font-extrabold block mb-1">Cargo / Especialização</label>
+                      <input
+                        type="text"
+                        placeholder="Ex: Master Barber, Barbeiro Senior"
+                        value={editingBarber.role || ''}
+                        onChange={(e) => setEditingBarber({ ...editingBarber, role: e.target.value })}
                         className="w-full rounded-xl border border-zinc-800 bg-zinc-900 p-2.5 text-white focus:border-amber-500 focus:outline-none"
                       />
                     </div>
-                  </div>
 
-                  {/* Nome Completo */}
-                  <div>
-                    <label className="text-zinc-300 font-extrabold block mb-1">Nome Completo</label>
-                    <input
-                      type="text"
-                      placeholder="Ex: Jadson Barber"
-                      value={editingBarber.name || ''}
-                      onChange={(e) => setEditingBarber({ ...editingBarber, name: e.target.value })}
-                      className="w-full rounded-xl border border-zinc-800 bg-zinc-900 p-2.5 text-white focus:border-amber-500 focus:outline-none"
-                    />
-                  </div>
-
-                  {/* Cargo / Função */}
-                  <div>
-                    <label className="text-zinc-300 font-extrabold block mb-1">Cargo / Especialização</label>
-                    <input
-                      type="text"
-                      placeholder="Ex: Master Barber, Barbeiro Senior"
-                      value={editingBarber.role || ''}
-                      onChange={(e) => setEditingBarber({ ...editingBarber, role: e.target.value })}
-                      className="w-full rounded-xl border border-zinc-800 bg-zinc-900 p-2.5 text-white focus:border-amber-500 focus:outline-none"
-                    />
-                  </div>
-
-                  {/* CPF */}
-                  <div>
-                    <label className="text-zinc-300 font-extrabold block mb-1">CPF</label>
-                    <input
-                      type="text"
-                      placeholder="000.000.000-00"
-                      value={editingBarber.cpf || ''}
-                      onChange={(e) => setEditingBarber({ ...editingBarber, cpf: e.target.value })}
-                      className="w-full rounded-xl border border-zinc-800 bg-zinc-900 p-2.5 text-white focus:border-amber-500 focus:outline-none"
-                    />
-                  </div>
-
-                  {/* CNPJ */}
-                  <div>
-                    <label className="text-zinc-300 font-extrabold block mb-1">CNPJ</label>
-                    <input
-                      type="text"
-                      placeholder="00.000.000/0001-00"
-                      value={editingBarber.cnpj || ''}
-                      onChange={(e) => setEditingBarber({ ...editingBarber, cnpj: e.target.value })}
-                      className="w-full rounded-xl border border-zinc-800 bg-zinc-900 p-2.5 text-white focus:border-amber-500 focus:outline-none"
-                    />
-                  </div>
-
-                  {/* Email */}
-                  <div>
-                    <label className="text-zinc-300 font-extrabold block mb-1">Email</label>
-                    <input
-                      type="email"
-                      placeholder="barbeiro@email.com"
-                      value={editingBarber.email || ''}
-                      onChange={(e) => setEditingBarber({ ...editingBarber, email: e.target.value })}
-                      className="w-full rounded-xl border border-zinc-800 bg-zinc-900 p-2.5 text-white focus:border-amber-500 focus:outline-none"
-                    />
-                  </div>
-
-                  {/* Whatsapp */}
-                  <div>
-                    <label className="text-zinc-300 font-extrabold block mb-1">Whatsapp / Telefone</label>
-                    <input
-                      type="text"
-                      placeholder="(11) 99999-9999"
-                      value={editingBarber.phone || ''}
-                      onChange={(e) => setEditingBarber({ ...editingBarber, phone: e.target.value })}
-                      className="w-full rounded-xl border border-zinc-800 bg-zinc-900 p-2.5 text-white focus:border-amber-500 focus:outline-none"
-                    />
-                  </div>
-
-                  {/* Endereço */}
-                  <div className="md:col-span-2">
-                    <label className="text-zinc-300 font-extrabold block mb-1">Endereço Residencial/Contato</label>
-                    <input
-                      type="text"
-                      placeholder="Rua, Número, Bairro, Cidade - UF"
-                      value={editingBarber.address || ''}
-                      onChange={(e) => setEditingBarber({ ...editingBarber, address: e.target.value })}
-                      className="w-full rounded-xl border border-zinc-800 bg-zinc-900 p-2.5 text-white focus:border-amber-500 focus:outline-none"
-                    />
-                  </div>
-
-                  {/* Chave Pix */}
-                  <div>
-                    <label className="text-zinc-300 font-extrabold block mb-1">Chave Pix</label>
-                    <input
-                      type="text"
-                      placeholder="CPF, Email, Celular ou Aleatória"
-                      value={editingBarber.pixKey || ''}
-                      onChange={(e) => setEditingBarber({ ...editingBarber, pixKey: e.target.value })}
-                      className="w-full rounded-xl border border-zinc-800 bg-zinc-900 p-2.5 text-white focus:border-amber-500 focus:outline-none font-mono"
-                    />
-                  </div>
-
-                  {/* Salário */}
-                  <div>
-                    <label className="text-zinc-300 font-extrabold block mb-1">Salário Base (R$)</label>
-                    <input
-                      type="text"
-                      placeholder="Ex: 2500,00"
-                      value={editingBarber.salary || ''}
-                      onChange={(e) => setEditingBarber({ ...editingBarber, salary: e.target.value })}
-                      className="w-full rounded-xl border border-zinc-800 bg-zinc-900 p-2.5 text-white focus:border-amber-500 focus:outline-none"
-                    />
-                  </div>
-
-                  {/* Comissão de Serviço */}
-                  <div>
-                    <label className="text-zinc-300 font-extrabold block mb-1">Comissão de Serviço (%)</label>
-                    <input
-                      type="text"
-                      placeholder="Ex: 50"
-                      value={editingBarber.serviceCommission || ''}
-                      onChange={(e) => setEditingBarber({ ...editingBarber, serviceCommission: e.target.value })}
-                      className="w-full rounded-xl border border-zinc-800 bg-zinc-900 p-2.5 text-white focus:border-amber-500 focus:outline-none"
-                    />
-                  </div>
-
-                  {/* Comissão de Vendas */}
-                  <div>
-                    <label className="text-zinc-300 font-extrabold block mb-1">Comissão de Vendas (%)</label>
-                    <input
-                      type="text"
-                      placeholder="Ex: 10"
-                      value={editingBarber.salesCommission || ''}
-                      onChange={(e) => setEditingBarber({ ...editingBarber, salesCommission: e.target.value })}
-                      className="w-full rounded-xl border border-zinc-800 bg-zinc-900 p-2.5 text-white focus:border-amber-500 focus:outline-none"
-                    />
-                  </div>
-
-                  {/* Especialidades */}
-                  <div>
-                    <label className="text-zinc-300 font-extrabold block mb-1">Especialidades (separadas por vírgula)</label>
-                    <input
-                      type="text"
-                      placeholder="Degradê, Barba, Visagismo, Corte Clássico"
-                      value={Array.isArray(editingBarber.specialties) ? editingBarber.specialties.join(', ') : editingBarber.specialties || ''}
-                      onChange={(e) => setEditingBarber({ ...editingBarber, specialties: e.target.value as unknown as string[] })}
-                      className="w-full rounded-xl border border-zinc-800 bg-zinc-900 p-2.5 text-white focus:border-amber-500 focus:outline-none"
-                    />
-                  </div>
-
-                  {/* Horário de Almoço com Relógio */}
-                  <div className="md:col-span-2 rounded-2xl border border-amber-500/30 bg-amber-500/5 p-4 space-y-3">
-                    <div className="flex items-center justify-between">
-                      <label className="text-amber-400 font-extrabold text-xs flex items-center gap-2">
-                        <Clock className="h-4 w-4 text-amber-400" />
-                        Horário de Almoço (Escolha do Horário via Relógio)
-                      </label>
-                      <span className="text-[10px] font-extrabold px-2.5 py-1 rounded-md bg-amber-500/20 text-amber-300 border border-amber-500/30">
-                        🕒 {editingBarber.lunchBreak || '12:00 - 13:00'}
-                      </span>
+                    {/* CPF */}
+                    <div>
+                      <label className="text-zinc-300 font-extrabold block mb-1">CPF</label>
+                      <input
+                        type="text"
+                        placeholder="000.000.000-00"
+                        value={editingBarber.cpf || ''}
+                        onChange={(e) => setEditingBarber({ ...editingBarber, cpf: e.target.value })}
+                        className="w-full rounded-xl border border-zinc-800 bg-zinc-900 p-2.5 text-white focus:border-amber-500 focus:outline-none"
+                      />
                     </div>
 
-                    <p className="text-[11px] text-zinc-400">
-                      Selecione no relógio os horários de início e fim da pausa para refeição. O sistema bloqueará agendamentos automaticamente neste intervalo com a observação &quot;Horário de almoço&quot;.
-                    </p>
+                    {/* CNPJ */}
+                    <div>
+                      <label className="text-zinc-300 font-extrabold block mb-1">CNPJ</label>
+                      <input
+                        type="text"
+                        placeholder="00.000.000/0001-00"
+                        value={editingBarber.cnpj || ''}
+                        onChange={(e) => setEditingBarber({ ...editingBarber, cnpj: e.target.value })}
+                        className="w-full rounded-xl border border-zinc-800 bg-zinc-900 p-2.5 text-white focus:border-amber-500 focus:outline-none"
+                      />
+                    </div>
 
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                      <div>
-                        <label className="text-[11px] font-bold text-zinc-300 block mb-1">⏰ Início do Almoço</label>
-                        <input
-                          type="time"
-                          value={
-                            editingBarber.lunchStart ||
-                            (editingBarber.lunchBreak ? editingBarber.lunchBreak.split(/[-às]+/)[0]?.trim() : '12:00') ||
-                            '12:00'
-                          }
-                          onChange={(e) => {
-                            const newStart = e.target.value;
-                            const currentEnd =
-                              editingBarber.lunchEnd ||
-                              (editingBarber.lunchBreak ? editingBarber.lunchBreak.split(/[-às]+/)[1]?.trim() : '13:00') ||
-                              '13:00';
-                            setEditingBarber({
-                              ...editingBarber,
-                              lunchStart: newStart,
-                              lunchEnd: currentEnd,
-                              lunchBreak: `${newStart} - ${currentEnd}`
-                            });
-                          }}
-                          className="w-full rounded-xl border border-zinc-800 bg-zinc-900 p-2.5 text-white font-mono font-bold focus:border-amber-500 focus:outline-none cursor-pointer text-sm"
-                        />
+                    {/* Email */}
+                    <div>
+                      <label className="text-zinc-300 font-extrabold block mb-1">Email</label>
+                      <input
+                        type="email"
+                        placeholder="barbeiro@email.com"
+                        value={editingBarber.email || ''}
+                        onChange={(e) => setEditingBarber({ ...editingBarber, email: e.target.value })}
+                        className="w-full rounded-xl border border-zinc-800 bg-zinc-900 p-2.5 text-white focus:border-amber-500 focus:outline-none"
+                      />
+                    </div>
+
+                    {/* Whatsapp */}
+                    <div>
+                      <label className="text-zinc-300 font-extrabold block mb-1">Whatsapp / Telefone</label>
+                      <input
+                        type="text"
+                        placeholder="(11) 99999-9999"
+                        value={editingBarber.phone || ''}
+                        onChange={(e) => setEditingBarber({ ...editingBarber, phone: e.target.value })}
+                        className="w-full rounded-xl border border-zinc-800 bg-zinc-900 p-2.5 text-white focus:border-amber-500 focus:outline-none"
+                      />
+                    </div>
+
+                    {/* Endereço */}
+                    <div className="md:col-span-2">
+                      <label className="text-zinc-300 font-extrabold block mb-1">Endereço Residencial/Contato</label>
+                      <input
+                        type="text"
+                        placeholder="Rua, Número, Bairro, Cidade - UF"
+                        value={editingBarber.address || ''}
+                        onChange={(e) => setEditingBarber({ ...editingBarber, address: e.target.value })}
+                        className="w-full rounded-xl border border-zinc-800 bg-zinc-900 p-2.5 text-white focus:border-amber-500 focus:outline-none"
+                      />
+                    </div>
+
+                    {/* Chave Pix */}
+                    <div>
+                      <label className="text-zinc-300 font-extrabold block mb-1">Chave Pix</label>
+                      <input
+                        type="text"
+                        placeholder="CPF, Email, Celular ou Aleatória"
+                        value={editingBarber.pixKey || ''}
+                        onChange={(e) => setEditingBarber({ ...editingBarber, pixKey: e.target.value })}
+                        className="w-full rounded-xl border border-zinc-800 bg-zinc-900 p-2.5 text-white focus:border-amber-500 focus:outline-none font-mono"
+                      />
+                    </div>
+
+                    {/* Salário */}
+                    <div>
+                      <label className="text-zinc-300 font-extrabold block mb-1">Salário Base (R$)</label>
+                      <input
+                        type="text"
+                        placeholder="Ex: 2500,00"
+                        value={editingBarber.salary || ''}
+                        onChange={(e) => setEditingBarber({ ...editingBarber, salary: e.target.value })}
+                        className="w-full rounded-xl border border-zinc-800 bg-zinc-900 p-2.5 text-white focus:border-amber-500 focus:outline-none"
+                      />
+                    </div>
+
+                    {/* Comissão de Serviço */}
+                    <div>
+                      <label className="text-zinc-300 font-extrabold block mb-1">Comissão de Serviço (%)</label>
+                      <input
+                        type="text"
+                        placeholder="Ex: 50"
+                        value={editingBarber.serviceCommission || ''}
+                        onChange={(e) => setEditingBarber({ ...editingBarber, serviceCommission: e.target.value })}
+                        className="w-full rounded-xl border border-zinc-800 bg-zinc-900 p-2.5 text-white focus:border-amber-500 focus:outline-none"
+                      />
+                    </div>
+
+                    {/* Comissão de Vendas */}
+                    <div>
+                      <label className="text-zinc-300 font-extrabold block mb-1">Comissão de Vendas (%)</label>
+                      <input
+                        type="text"
+                        placeholder="Ex: 10"
+                        value={editingBarber.salesCommission || ''}
+                        onChange={(e) => setEditingBarber({ ...editingBarber, salesCommission: e.target.value })}
+                        className="w-full rounded-xl border border-zinc-800 bg-zinc-900 p-2.5 text-white focus:border-amber-500 focus:outline-none"
+                      />
+                    </div>
+
+                    {/* Especialidades */}
+                    <div>
+                      <label className="text-zinc-300 font-extrabold block mb-1">Especialidades (separadas por vírgula)</label>
+                      <input
+                        type="text"
+                        placeholder="Degradê, Barba, Visagismo, Corte Clássico"
+                        value={Array.isArray(editingBarber.specialties) ? editingBarber.specialties.join(', ') : (editingBarber.specialties as unknown as string) || ''}
+                        onChange={(e) => setEditingBarber({ ...editingBarber, specialties: e.target.value as unknown as string[] })}
+                        className="w-full rounded-xl border border-zinc-800 bg-zinc-900 p-2.5 text-white focus:border-amber-500 focus:outline-none"
+                      />
+                    </div>
+
+                    {/* Horário de Almoço com Relógio */}
+                    <div className="md:col-span-2 rounded-2xl border border-amber-500/30 bg-amber-500/5 p-4 space-y-3">
+                      <div className="flex items-center justify-between">
+                        <label className="text-amber-400 font-extrabold text-xs flex items-center gap-2">
+                          <Clock className="h-4 w-4 text-amber-400" />
+                          Horário de Almoço (Escolha do Horário via Relógio)
+                        </label>
+                        <span className="text-[10px] font-extrabold px-2.5 py-1 rounded-md bg-amber-500/20 text-amber-300 border border-amber-500/30">
+                          🕒 {editingBarber.lunchBreak || '12:00 - 13:00'}
+                        </span>
                       </div>
 
-                      <div>
-                        <label className="text-[11px] font-bold text-zinc-300 block mb-1">⏰ Fim do Almoço</label>
-                        <input
-                          type="time"
-                          value={
-                            editingBarber.lunchEnd ||
-                            (editingBarber.lunchBreak ? editingBarber.lunchBreak.split(/[-às]+/)[1]?.trim() : '13:00') ||
-                            '13:00'
-                          }
-                          onChange={(e) => {
-                            const currentStart =
+                      <p className="text-[11px] text-zinc-400">
+                        Selecione no relógio os horários de início e fim da pausa para refeição. O sistema bloqueará agendamentos automaticamente neste intervalo com a observação &quot;Horário de almoço&quot;.
+                      </p>
+
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div>
+                          <label className="text-[11px] font-bold text-zinc-300 block mb-1">⏰ Início do Almoço</label>
+                          <input
+                            type="time"
+                            value={
                               editingBarber.lunchStart ||
                               (editingBarber.lunchBreak ? editingBarber.lunchBreak.split(/[-às]+/)[0]?.trim() : '12:00') ||
-                              '12:00';
-                            const newEnd = e.target.value;
-                            setEditingBarber({
-                              ...editingBarber,
-                              lunchStart: currentStart,
-                              lunchEnd: newEnd,
-                              lunchBreak: `${currentStart} - ${newEnd}`
-                            });
-                          }}
-                          className="w-full rounded-xl border border-zinc-800 bg-zinc-900 p-2.5 text-white font-mono font-bold focus:border-amber-500 focus:outline-none cursor-pointer text-sm"
-                        />
+                              '12:00'
+                            }
+                            onChange={(e) => {
+                              const newStart = e.target.value;
+                              const currentEnd =
+                                editingBarber.lunchEnd ||
+                                (editingBarber.lunchBreak ? editingBarber.lunchBreak.split(/[-às]+/)[1]?.trim() : '13:00') ||
+                                '13:00';
+                              setEditingBarber({
+                                ...editingBarber,
+                                lunchStart: newStart,
+                                lunchEnd: currentEnd,
+                                lunchBreak: `${newStart} - ${currentEnd}`
+                              });
+                            }}
+                            className="w-full rounded-xl border border-zinc-800 bg-zinc-900 p-2.5 text-white font-mono font-bold focus:border-amber-500 focus:outline-none cursor-pointer text-sm"
+                          />
+                        </div>
+
+                        <div>
+                          <label className="text-[11px] font-bold text-zinc-300 block mb-1">⏰ Fim do Almoço</label>
+                          <input
+                            type="time"
+                            value={
+                              editingBarber.lunchEnd ||
+                              (editingBarber.lunchBreak ? editingBarber.lunchBreak.split(/[-às]+/)[1]?.trim() : '13:00') ||
+                              '13:00'
+                            }
+                            onChange={(e) => {
+                              const currentStart =
+                                editingBarber.lunchStart ||
+                                (editingBarber.lunchBreak ? editingBarber.lunchBreak.split(/[-às]+/)[0]?.trim() : '12:00') ||
+                                '12:00';
+                              const newEnd = e.target.value;
+                              setEditingBarber({
+                                ...editingBarber,
+                                lunchStart: currentStart,
+                                lunchEnd: newEnd,
+                                lunchBreak: `${currentStart} - ${newEnd}`
+                              });
+                            }}
+                            className="w-full rounded-xl border border-zinc-800 bg-zinc-900 p-2.5 text-white font-mono font-bold focus:border-amber-500 focus:outline-none cursor-pointer text-sm"
+                          />
+                        </div>
                       </div>
                     </div>
-                  </div>
 
-                  {/* Status na Agenda */}
-                  <div className="md:col-span-2">
-                    <label className="text-zinc-300 font-extrabold block mb-1">Status na Agenda</label>
-                    <select
-                      value={editingBarber.status || 'active'}
-                      onChange={(e) => setEditingBarber({ ...editingBarber, status: e.target.value as 'active' | 'inactive' | 'away' })}
-                      className="w-full rounded-xl border border-zinc-800 bg-zinc-900 p-2.5 text-white focus:border-amber-500 focus:outline-none font-bold"
-                    >
-                      <option value="active">Ativo (Disponível para agendamento)</option>
-                      <option value="inactive">Inativo (Indisponível)</option>
-                      <option value="away">Ausente / Em Folga</option>
-                    </select>
+                    {/* Status na Agenda */}
+                    <div className="md:col-span-2">
+                      <label className="text-zinc-300 font-extrabold block mb-1">Status na Agenda</label>
+                      <select
+                        value={editingBarber.status || 'active'}
+                        onChange={(e) => setEditingBarber({ ...editingBarber, status: e.target.value as 'active' | 'inactive' | 'away' })}
+                        className="w-full rounded-xl border border-zinc-800 bg-zinc-900 p-2.5 text-white focus:border-amber-500 focus:outline-none font-bold"
+                      >
+                        <option value="active">Ativo (Disponível para agendamento)</option>
+                        <option value="inactive">Inativo (Indisponível)</option>
+                        <option value="away">Ausente / Em Folga</option>
+                      </select>
+                    </div>
                   </div>
                 </div>
 
-                <div className="flex items-center justify-end gap-3 pt-4 border-t border-zinc-800">
+                {/* Rodapé fixo com botões */}
+                <div className="flex items-center justify-end gap-3 pt-4 border-t border-zinc-800 shrink-0">
                   <button
                     onClick={() => setEditingBarber(null)}
                     className="rounded-xl border border-zinc-800 bg-zinc-900 px-5 py-2.5 text-xs font-bold text-zinc-300 hover:bg-zinc-800 cursor-pointer"
@@ -2273,14 +2316,20 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                   </button>
                   <button
                     onClick={() => {
+                      const trimmedName = (editingBarber.name || '').trim();
+                      if (!trimmedName) {
+                        alert('⚠️ Por favor, digite o nome completo do barbeiro.');
+                        return;
+                      }
+
                       const specArray = typeof editingBarber.specialties === 'string'
                         ? (editingBarber.specialties as string).split(',').map(s => s.trim()).filter(Boolean)
-                        : (editingBarber.specialties || ['Corte & Barba']);
+                        : (Array.isArray(editingBarber.specialties) ? editingBarber.specialties : ['Corte & Barba']);
 
                       const barberToSave: Barber = {
                         ...editingBarber,
                         id: editingBarber.id || 'brb-' + Math.random().toString(36).substring(2, 9),
-                        name: editingBarber.name || 'Barbeiro Sem Nome',
+                        name: trimmedName,
                         role: editingBarber.role || 'Barbeiro Specialist',
                         avatar: editingBarber.avatarUrl || editingBarber.avatar || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=400",
                         avatarUrl: editingBarber.avatarUrl || editingBarber.avatar || "",

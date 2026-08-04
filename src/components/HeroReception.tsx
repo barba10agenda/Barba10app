@@ -184,56 +184,58 @@ export const HeroReception: React.FC<HeroReceptionProps> = ({
             <p className="text-xs text-gray-500">Cadastre a equipe de barbeiros no Painel Administrativo para exibi-los aqui.</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {barbers.map((barber) => (
               <div
                 key={barber.id}
-                className="overflow-hidden rounded-2xl border border-white/10 bg-[#0F0F0F] transition-all hover:border-yellow-500/40"
+                className="overflow-hidden rounded-2xl border border-white/10 bg-[#0F0F0F] transition-all hover:border-yellow-500/40 p-3 sm:p-4 flex flex-row items-start gap-3 sm:gap-4"
               >
-                <div className="relative h-48 w-full overflow-hidden bg-black">
+                {/* Imagem compacta no lado esquerdo */}
+                <div className="relative w-24 h-24 sm:w-28 sm:h-28 shrink-0 overflow-hidden rounded-xl bg-black border border-white/10 shadow-md">
                   <img
                     src={barber.avatar}
                     alt={barber.name}
+                    width={500}
+                    height={500}
                     className="h-full w-full object-cover transition-transform duration-500 hover:scale-105"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-[#0F0F0F] via-transparent to-transparent" />
-                  <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between">
-                    <span className="flex items-center gap-1 rounded-md bg-black/80 backdrop-blur-md px-2 py-1 text-xs font-bold text-yellow-400 border border-yellow-500/30">
-                      <div className="flex items-center gap-0.5">
-                        {[1, 2, 3, 4, 5].map((s) => (
-                          <Star key={s} className="h-3 w-3 fill-yellow-400 text-yellow-400" />
-                        ))}
-                      </div>
-                      <span className="ml-0.5">{barber.rating.toFixed(1)}</span>
-                    </span>
-                    <span className="rounded-md bg-emerald-500/20 border border-emerald-500/40 px-2 py-0.5 text-[10px] font-bold text-emerald-300 uppercase tracking-widest">
-                      DISPONÍVEL HOJE
-                    </span>
+                  <div className="absolute top-1 left-1 flex items-center gap-0.5 rounded bg-black/80 backdrop-blur-md px-1.5 py-0.5 text-[10px] font-bold text-yellow-400 border border-yellow-500/30">
+                    <Star className="h-2.5 w-2.5 fill-yellow-400 text-yellow-400" />
+                    <span>{barber.rating.toFixed(1)}</span>
                   </div>
                 </div>
 
-                <div className="p-5 space-y-3">
-                  <div>
-                    <h3 className="font-syne text-lg font-bold text-white uppercase tracking-tight">{barber.name}</h3>
-                    <p className="text-xs font-bold text-yellow-500 uppercase tracking-wider">{barber.role}</p>
-                  </div>
-
-                  <div className="flex flex-wrap gap-1.5 pt-1">
-                    {barber.specialties.map((spec, idx) => (
-                      <span
-                        key={idx}
-                        className="rounded-md bg-white/5 px-2 py-0.5 text-[10px] text-gray-300 border border-white/5 uppercase tracking-wider font-semibold"
-                      >
-                        {spec}
+                {/* Descrição e Tags ao LADO DIREITO alinhados à imagem */}
+                <div className="flex-1 min-w-0 space-y-2 flex flex-col justify-between py-0.5 text-left">
+                  <div className="space-y-1.5">
+                    <div>
+                      <span className="rounded bg-emerald-500/20 border border-emerald-500/40 px-1.5 py-0.5 text-[9px] font-bold text-emerald-300 uppercase tracking-widest inline-block mb-1">
+                        DISPONÍVEL HOJE
                       </span>
-                    ))}
+                      <h3 className="font-syne text-base font-bold text-white uppercase tracking-tight truncate">{barber.name}</h3>
+                      <p className="text-[11px] font-bold text-yellow-500 uppercase tracking-wider">{barber.role}</p>
+                    </div>
+
+                    <div className="space-y-1">
+                      <span className="text-[9px] text-gray-400 font-bold uppercase tracking-wider block">Especialidades:</span>
+                      <div className="flex flex-wrap gap-1">
+                        {barber.specialties.map((spec, idx) => (
+                          <span
+                            key={idx}
+                            className="rounded-md bg-white/5 px-2 py-0.5 text-[10px] text-gray-300 border border-white/5 font-semibold"
+                          >
+                            {spec}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
                   </div>
 
                   <button
                     onClick={onStartQuiz}
-                    className="w-full mt-2 rounded-lg bg-white/10 py-2.5 text-xs font-bold uppercase tracking-wider text-white transition-colors hover:bg-yellow-400 hover:text-black"
+                    className="w-full mt-1 rounded-lg bg-yellow-400 py-1.5 text-[11px] font-extrabold uppercase tracking-wider text-black transition-colors hover:bg-yellow-300 shadow-md"
                   >
-                    Agendar com {barber.name.split(' ')[0]}
+                    Agendar
                   </button>
                 </div>
               </div>

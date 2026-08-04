@@ -397,7 +397,7 @@ export const BookingQuiz: React.FC<BookingQuizProps> = ({
             Escolha o barbeiro de sua preferência para o atendimento no dia <strong className="text-white">{selectedDate}</strong> às <strong className="text-yellow-400">{selectedTimeSlot}</strong>.
           </p>
 
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 gap-4">
             {barbers.map((barber) => {
               const isSelected = selectedBarber?.id === barber.id;
               const isLunch = isBarberInLunchBreak(
@@ -424,7 +424,7 @@ export const BookingQuiz: React.FC<BookingQuizProps> = ({
                     setSelectedBarber(barber);
                     scrollToElement(nextButtonStep2Ref, 'nearest');
                   }}
-                  className={`relative overflow-hidden rounded-xl border p-4 transition-all ${
+                  className={`relative overflow-hidden rounded-2xl border p-3 sm:p-4 transition-all flex flex-row items-start gap-3 sm:gap-4 ${
                     isUnavailable
                       ? 'cursor-not-allowed border-red-500/30 bg-red-950/10 opacity-75 hover:opacity-90'
                       : isSelected
@@ -432,53 +432,83 @@ export const BookingQuiz: React.FC<BookingQuizProps> = ({
                       : 'cursor-pointer border-white/10 bg-white/5 hover:border-white/20'
                   }`}
                 >
-                  <div className="relative h-32 w-full overflow-hidden rounded-lg bg-zinc-900">
+                  {/* Foto Menor no lado esquerdo (1:1 Quadrada 500x500 base) */}
+                  <div className="relative w-24 h-24 sm:w-32 sm:h-32 shrink-0 overflow-hidden rounded-xl bg-zinc-900 border border-white/10 shadow-md">
                     <img
                       src={barber.avatar}
                       alt={barber.name}
+                      width={500}
+                      height={500}
                       className={`h-full w-full object-cover ${isUnavailable ? 'grayscale' : ''}`}
                     />
                     {isLunch && (
-                      <div className="absolute top-2 left-2 right-2 bg-red-600/90 text-white text-[10px] font-black uppercase tracking-wider py-1 px-2 rounded text-center backdrop-blur-sm border border-red-400/30 shadow-lg">
-                        Indisponível - Horário de almoço
+                      <div className="absolute top-1 left-1 right-1 bg-red-600/90 text-white text-[9px] font-black uppercase tracking-tight py-0.5 px-1 rounded text-center backdrop-blur-sm border border-red-400/30 shadow-lg">
+                        Almoço
                       </div>
                     )}
                     {isInactive && !isLunch && (
-                      <div className="absolute top-2 left-2 right-2 bg-zinc-800/90 text-zinc-300 text-[10px] font-black uppercase tracking-wider py-1 px-2 rounded text-center backdrop-blur-sm border border-zinc-600">
+                      <div className="absolute top-1 left-1 right-1 bg-zinc-800/90 text-zinc-300 text-[9px] font-black uppercase tracking-tight py-0.5 px-1 rounded text-center backdrop-blur-sm border border-zinc-600">
                         Indisponível
                       </div>
                     )}
                     {isSelected && !isUnavailable && (
-                      <div className="absolute top-2 right-2 flex h-6 w-6 items-center justify-center rounded-full bg-yellow-400 text-black font-bold">
+                      <div className="absolute top-1.5 right-1.5 flex h-6 w-6 items-center justify-center rounded-full bg-yellow-400 text-black font-bold shadow-lg">
                         <Check className="h-3.5 w-3.5 stroke-[3]" />
                       </div>
                     )}
                   </div>
 
-                  <div className="mt-3 space-y-1">
-                    <div className="flex items-center justify-between">
-                      <h3 className="font-syne text-sm font-bold text-white uppercase tracking-tight">{barber.name}</h3>
-                      <div className="flex items-center gap-0.5">
-                        {[1, 2, 3, 4, 5].map((star) => (
-                          <Star key={star} className="h-3 w-3 fill-yellow-400 text-yellow-400" />
-                        ))}
+                  {/* Descrições e Tags ao LADO DIREITO alinhados à imagem */}
+                  <div className="flex-1 min-w-0 space-y-2 flex flex-col justify-between text-left">
+                    <div className="space-y-1.5">
+                      <div className="flex flex-wrap items-center justify-between gap-1.5 border-b border-white/10 pb-1.5">
+                        <div className="min-w-0">
+                          <h3 className="font-syne text-base font-bold text-white uppercase tracking-tight truncate">{barber.name}</h3>
+                          <p className="text-[11px] font-bold text-yellow-400 uppercase tracking-wider">{barber.role}</p>
+                        </div>
+                        <div className="flex items-center gap-1 bg-yellow-400/10 border border-yellow-400/30 px-2 py-0.5 rounded-full shrink-0">
+                          <Star className="h-3 w-3 fill-yellow-400 text-yellow-400" />
+                          <span className="text-xs font-extrabold text-yellow-400">{barber.rating.toFixed(1)}</span>
+                        </div>
                       </div>
-                    </div>
-                    <p className="text-[10px] uppercase font-bold text-yellow-400 tracking-wider">{barber.role}</p>
 
-                    {isLunch && (
-                      <p className="text-[11px] font-extrabold text-red-400 mt-1 flex items-center gap-1 bg-red-500/10 p-1.5 rounded-md border border-red-500/20">
-                        <Clock className="h-3.5 w-3.5 shrink-0" />
-                        <span>Indisponível • Horário de almoço</span>
-                      </p>
-                    )}
-
-                    <div className="flex flex-wrap gap-1 pt-1">
-                      {barber.specialties.slice(0, 2).map((spec, i) => (
-                        <span key={i} className="rounded bg-white/5 px-1.5 py-0.5 text-[9px] text-gray-400">
-                          {spec}
+                      {/* Tags / Especialidades */}
+                      <div className="space-y-1">
+                        <span className="text-[9px] font-bold text-gray-400 uppercase tracking-wider block">
+                          Especialidades:
                         </span>
-                      ))}
+                        <div className="flex flex-wrap gap-1">
+                          {barber.specialties.map((spec, i) => (
+                            <span key={i} className="rounded-md bg-white/10 px-2 py-0.5 text-[10px] font-bold text-gray-200 border border-white/10">
+                              {spec}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+
+                      {isLunch && (
+                        <div className="text-[11px] font-bold text-red-400 flex items-center gap-1 bg-red-500/10 p-1.5 rounded-lg border border-red-500/20">
+                          <Clock className="h-3.5 w-3.5 shrink-0" />
+                          <span>Almoço ({barber.lunchBreak || '12:00 - 13:00'})</span>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Botão de escolha alinhado no rodapé do cartão */}
+                    <div className="pt-1 flex items-center justify-between gap-2 border-t border-white/5">
+                      <span className="text-[10px] text-gray-400 font-semibold truncate hidden sm:inline">
+                        {isSelected ? '✓ Selecionado' : 'Clique para selecionar'}
+                      </span>
+                      <button
+                        type="button"
+                        className={`w-full sm:w-auto px-3 py-1.5 rounded-lg text-[11px] font-extrabold uppercase tracking-wider transition-all ${
+                          isSelected
+                            ? 'bg-yellow-400 text-black shadow-md scale-102'
+                            : 'bg-white/10 text-white hover:bg-yellow-400 hover:text-black'
+                        }`}
+                      >
+                        {isSelected ? 'Selecionado' : 'Escolher'}
+                      </button>
                     </div>
                   </div>
                 </div>
