@@ -1,7 +1,45 @@
 // Sound notification utility for new appointments (Admin only)
 
+export interface SoundSettings {
+  enabled: boolean;
+  soundType: 'default' | 'custom';
+  customSoundUrl: string;
+  customSoundName: string;
+}
+
+const STORAGE_KEY = 'jadson_barber_sound_config_v1';
+
+export function getSoundSettings(): SoundSettings {
+  if (typeof window === 'undefined') {
+    return { enabled: true, soundType: 'default', customSoundUrl: '', customSoundName: '' };
+  }
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      return {
+        enabled: parsed.enabled ?? true,
+        soundType: parsed.soundType || 'default',
+        customSoundUrl: parsed.customSoundUrl || '',
+        customSoundName: parsed.customSoundName || '',
+      };
+    }
+  } catch (e) {
+    console.warn('Error reading sound config:', e);
+  }
+  return { enabled: true, soundType: 'default', customSoundUrl: '', customSoundName: '' };
+}
+
+export function saveSoundSettings(settings: SoundSettings): void {
+  if (typeof window === 'undefined') return;
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(settings));
+  } catch (e) {
+    console.warn('Error saving sound config:', e);
+  }
+}
+
 let previousAppointmentIds: Set<string> | null = null;
-let isAudioContextInitialized = false;
 let globalAudioCtx: AudioContext | null = null;
 
 function getAudioContext(): AudioContext | null {
@@ -27,7 +65,6 @@ if (typeof window !== 'undefined') {
   const initAudioOnInteraction = () => {
     const ctx = getAudioContext();
     if (ctx && ctx.state === 'running') {
-      isAudioContextInitialized = true;
       window.removeEventListener('click', initAudioOnInteraction);
       window.removeEventListener('touchstart', initAudioOnInteraction);
     }
@@ -36,7 +73,7 @@ if (typeof window !== 'undefined') {
   window.addEventListener('touchstart', initAudioOnInteraction, { passive: true });
 }
 
-export function playAppointmentNotificationSound() {
+function playDefaultChime() {
   try {
     const ctx = getAudioContext();
     if (!ctx) return;
@@ -84,6 +121,28 @@ export function playAppointmentNotificationSound() {
   }
 }
 
+export function playAppointmentNotificationSound(forceTest = false) {
+  const settings = getSoundSettings();
+
+  if (!forceTest && !settings.enabled) return;
+
+  if (settings.soundType === 'custom' && settings.customSoundUrl) {
+    try {
+      const audio = new Audio(settings.customSoundUrl);
+      audio.volume = 0.9;
+      audio.play().catch(err => {
+        console.warn('Custom sound error, falling back to default:', err);
+        playDefaultChime();
+      });
+      return;
+    } catch (err) {
+      console.warn('Audio playback error, fallback to default:', err);
+    }
+  }
+
+  playDefaultChime();
+}
+
 export function checkAndPlayNewAppointmentSound(newAppointments: any[], currentUserRole?: string) {
   if (!newAppointments || !Array.isArray(newAppointments)) return;
 
@@ -117,6 +176,6 @@ export function checkAndPlayNewAppointmentSound(newAppointments: any[], currentU
   }
 
   if (hasNewAppointment && isAdminLogged) {
-    playAppointmentNotificationSound();
+    playAppointmentNotificationSound(false);
   }
 }

@@ -140,6 +140,59 @@ export const Navbar: React.FC<NavbarProps> = ({
         </div>
       </div>
 
+      {/* Sub-bar / Quick Nav Links on Mobile */}
+      <div className="flex items-center justify-around border-t border-white/5 bg-[#080808] px-2 py-2 md:hidden">
+        <button
+          onClick={() => setActiveView('home')}
+          className={`flex flex-col items-center gap-0.5 text-[10px] font-bold uppercase tracking-wider px-3 py-1.5 rounded-lg transition-colors ${
+            activeView === 'home'
+              ? 'text-yellow-400 bg-yellow-500/10 border border-yellow-500/30'
+              : 'text-gray-400 hover:text-white'
+          }`}
+        >
+          <span>Início</span>
+        </button>
+
+        <button
+          onClick={() => setActiveView('quiz')}
+          className={`flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider px-3 py-1.5 rounded-lg border transition-all ${
+            activeView === 'quiz'
+              ? 'bg-yellow-400 text-black border-yellow-400 shadow-md font-extrabold'
+              : 'text-yellow-400 border-yellow-500/30 bg-yellow-500/10'
+          }`}
+        >
+          <Scissors className="h-3 w-3" />
+          <span>Agendar</span>
+        </button>
+
+        {currentUser && (
+          <button
+            onClick={() => setActiveView('my-appointments')}
+            className={`flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider px-3 py-1.5 rounded-lg transition-colors ${
+              activeView === 'my-appointments'
+                ? 'text-yellow-400 bg-yellow-500/10 border border-yellow-500/30'
+                : 'text-gray-400 hover:text-white'
+            }`}
+          >
+            <CalendarCheck2 className="h-3 w-3 text-yellow-400" />
+            <span>Meus Agendamentos</span>
+          </button>
+        )}
+
+        {currentUser?.role === 'admin' && (
+          <button
+            onClick={() => setActiveView('admin')}
+            className={`flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider px-3 py-1.5 rounded-lg transition-colors ${
+              activeView === 'admin'
+                ? 'text-amber-400 bg-amber-500/10 border border-amber-500/30 font-extrabold'
+                : 'text-amber-500/80 hover:text-amber-400'
+            }`}
+          >
+            <ShieldCheck className="h-3 w-3 text-amber-400" />
+            <span>Painel ADM</span>
+          </button>
+        )}
+      </div>
 
     </header>
   );

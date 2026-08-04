@@ -3,9 +3,9 @@ import {
   ShieldCheck, Calendar, Clock, DollarSign, Users, Scissors, 
   Check, X, AlertCircle, Plus, Edit3, Trash2, Phone, Search, Radio, Database, Sparkles,
   Menu, LogOut, User, ChevronRight, Settings, Save, Layout, FileText, Building, LayoutDashboard, TrendingUp,
-  UserCheck, MessageCircle, Mail, Package, ShoppingBag, Tag, Box, Layers, AlertTriangle, Upload, Image as ImageIcon, Volume2
+  UserCheck, MessageCircle, Mail, Package, ShoppingBag, Tag, Box, Layers, AlertTriangle, Upload, Image as ImageIcon, Volume2, VolumeX, Music
 } from 'lucide-react';
-import { playAppointmentNotificationSound } from '../utils/soundNotification';
+import { playAppointmentNotificationSound, getSoundSettings, saveSoundSettings, SoundSettings } from '../utils/soundNotification';
 import { Appointment, Service, Barber, BlockedSlot, AppointmentStatus, UserAccount, InsumoItem, ProdutoVenda } from '../types';
 import { GENERATE_TIME_SLOTS } from '../services/store';
 import { ShopConfig } from '../services/configuracoes';
@@ -222,6 +222,15 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
   const [produtoCategoryFilter, setProdutoCategoryFilter] = useState('todos');
   const [editingProduto, setEditingProduto] = useState<Partial<ProdutoVenda> | null>(null);
   const [isProdutoModalOpen, setIsProdutoModalOpen] = useState(false);
+
+  // Sound Effect Notification Settings
+  const [soundSettings, setSoundSettings] = useState<SoundSettings>(() => getSoundSettings());
+  const [isSoundModalOpen, setIsSoundModalOpen] = useState(false);
+
+  const handleUpdateSoundSettings = (newSettings: SoundSettings) => {
+    saveSoundSettings(newSettings);
+    setSoundSettings(newSettings);
+  };
 
   useEffect(() => {
     const unsubscribe = subscribeAllUsers((users) => {
@@ -498,11 +507,85 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
   const allTimeSlots = GENERATE_TIME_SLOTS();
 
   return (
-    <div className="space-y-8 pb-16">
+    <div className="space-y-6 pb-16">
       
+      {/* Admin Panel Header (PC & Mobile Responsive) */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 rounded-2xl border border-amber-500/20 bg-gradient-to-r from-zinc-950 via-zinc-900 to-zinc-950 p-4 sm:p-5 shadow-xl">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-amber-500/10 text-amber-400 border border-amber-500/30 shrink-0">
+              <ShieldCheck className="h-6 w-6" />
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <h1 className="font-syne text-lg sm:text-xl font-black uppercase text-white tracking-wider">
+                  Painel ADM
+                </h1>
+                <span className="text-[10px] font-black uppercase px-2 py-0.5 rounded-md bg-amber-400 text-black">
+                  VIP
+                </span>
+              </div>
+              <p className="text-xs text-zinc-400 font-medium">
+                Gestão Geral da Barbearia • PC & Mobile
+              </p>
+            </div>
+          </div>
 
+          {/* Mobile Drawer Trigger Button */}
+          <button
+            type="button"
+            onClick={() => setSidebarOpen(true)}
+            className="flex items-center gap-1.5 md:hidden rounded-xl border border-amber-500/40 bg-amber-500/10 px-3 py-2 text-xs font-bold text-amber-400 hover:bg-amber-500/20 transition-all cursor-pointer"
+          >
+            <Menu className="h-4 w-4" />
+            <span>Menu ADM</span>
+          </button>
+        </div>
 
-      {/* Admin Tabs Navigation */}
+        {/* Quick Controls & Sound Settings (PC & Mobile) */}
+        <div className="flex flex-wrap items-center gap-2 pt-2 md:pt-0 border-t md:border-t-0 border-zinc-800">
+          <button
+            type="button"
+            onClick={() => setIsSoundModalOpen(true)}
+            title="Configurar efeito sonoro de novos agendamentos"
+            className="flex items-center gap-1.5 rounded-xl border border-amber-500/30 bg-amber-500/10 px-3 py-2 text-xs font-bold text-amber-400 hover:bg-amber-500/20 transition-all shrink-0 cursor-pointer"
+          >
+            {soundSettings.enabled ? (
+              <Volume2 className="h-4 w-4 text-amber-400" />
+            ) : (
+              <VolumeX className="h-4 w-4 text-red-400" />
+            )}
+            <span className="hidden sm:inline">Sinal Sonoro</span>
+            <span className={`text-[9px] px-1.5 py-0.2 rounded font-black uppercase ${
+              soundSettings.enabled ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' : 'bg-red-500/20 text-red-400 border border-red-500/30'
+            }`}>
+              {soundSettings.enabled ? (soundSettings.soundType === 'custom' ? 'Arquivo' : 'Ativo') : 'Off'}
+            </span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => playAppointmentNotificationSound(true)}
+            title="Clique para testar o som agora"
+            className="flex items-center gap-1.5 rounded-xl border border-zinc-700 bg-zinc-800 px-3 py-2 text-xs font-bold text-white hover:bg-zinc-700 transition-all shrink-0 cursor-pointer"
+          >
+            <Volume2 className="h-3.5 w-3.5 text-amber-400" />
+            <span className="hidden sm:inline">Testar Som</span>
+          </button>
+
+          {onLogout && (
+            <button
+              type="button"
+              onClick={onLogout}
+              title="Sair do painel administrativo"
+              className="flex items-center gap-1.5 rounded-xl border border-red-500/30 bg-red-500/10 px-3 py-2 text-xs font-bold text-red-400 hover:bg-red-500/20 transition-all shrink-0 cursor-pointer ml-auto md:ml-0"
+            >
+              <LogOut className="h-3.5 w-3.5" />
+              <span className="hidden sm:inline">Sair</span>
+            </button>
+          )}
+        </div>
+      </div>
       <div className="flex border-b border-zinc-800 overflow-x-auto">
         <button
           onClick={() => setActiveTab('dashboard')}
@@ -612,17 +695,38 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
           Configurações (Página Inicial)
         </button>
 
-        <button
-          type="button"
-          onClick={() => {
-            playAppointmentNotificationSound();
-          }}
-          title="Clique para testar o sinal sonoro de novos agendamentos"
-          className="ml-auto flex items-center gap-1.5 border-b-2 border-transparent px-4 py-3 text-xs font-bold text-amber-400 hover:text-amber-300 hover:bg-amber-400/10 transition-all shrink-0"
-        >
-          <Volume2 className="h-4 w-4" />
-          <span>Testar Som</span>
-        </button>
+        <div className="ml-auto flex items-center gap-2 py-1.5 px-2">
+          <button
+            type="button"
+            onClick={() => setIsSoundModalOpen(true)}
+            title="Configurar efeito sonoro e importar áudio do dispositivo"
+            className="flex items-center gap-1.5 rounded-xl border border-amber-500/30 bg-amber-500/10 px-3 py-1.5 text-xs font-bold text-amber-400 hover:bg-amber-500/20 transition-all shrink-0 cursor-pointer"
+          >
+            {soundSettings.enabled ? (
+              <Volume2 className="h-4 w-4 text-amber-400" />
+            ) : (
+              <VolumeX className="h-4 w-4 text-red-400" />
+            )}
+            <span>Configurar Som</span>
+            <span className={`text-[9px] px-1.5 py-0.2 rounded font-black uppercase ${
+              soundSettings.enabled ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' : 'bg-red-500/20 text-red-400 border border-red-500/30'
+            }`}>
+              {soundSettings.enabled ? (soundSettings.soundType === 'custom' ? 'Dispositivo' : 'Padrão') : 'Desativado'}
+            </span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => {
+              playAppointmentNotificationSound(true);
+            }}
+            title="Clique para testar o sinal sonoro agora"
+            className="flex items-center gap-1.5 rounded-xl border border-zinc-700 bg-zinc-800 px-3 py-1.5 text-xs font-bold text-white hover:bg-zinc-700 transition-all shrink-0 cursor-pointer"
+          >
+            <Volume2 className="h-3.5 w-3.5 text-amber-400" />
+            <span>Testar Som</span>
+          </button>
+        </div>
       </div>
 
       {/* TAB 0: DASHBOARD */}
@@ -2672,6 +2776,12 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
               </div>
             </div>
 
+            {/* Configuração do Som de Notificação */}
+            <SoundConfigSection
+              soundSettings={soundSettings}
+              onUpdateSettings={handleUpdateSoundSettings}
+            />
+
             <div className="flex justify-end pt-2">
               <button
                 type="submit"
@@ -2969,6 +3079,249 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
           </aside>
         </div>
       )}
+
+      {/* Sound Settings Modal */}
+      {isSoundModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 animate-in fade-in duration-200">
+          <div className="relative w-full max-w-2xl bg-zinc-950 border border-amber-500/30 rounded-2xl p-5 sm:p-6 space-y-6 shadow-2xl max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between border-b border-zinc-800 pb-4">
+              <div className="flex items-center gap-3">
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-amber-500/10 text-amber-400 border border-amber-500/30">
+                  <Volume2 className="h-5 w-5" />
+                </div>
+                <div>
+                  <h2 className="font-syne text-base font-bold text-white uppercase tracking-wider">
+                    Configuração do Sinal Sonoro
+                  </h2>
+                  <p className="text-xs text-amber-400 font-medium">Agendamentos em Tempo Real</p>
+                </div>
+              </div>
+              <button
+                onClick={() => setIsSoundModalOpen(false)}
+                className="rounded-xl border border-zinc-800 bg-zinc-900 p-2 text-zinc-400 hover:bg-zinc-800 hover:text-white transition-colors cursor-pointer"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+
+            <SoundConfigSection
+              soundSettings={soundSettings}
+              onUpdateSettings={handleUpdateSoundSettings}
+            />
+
+            <div className="flex justify-end border-t border-zinc-800 pt-4">
+              <button
+                type="button"
+                onClick={() => setIsSoundModalOpen(false)}
+                className="rounded-xl bg-amber-500 px-6 py-2.5 text-xs font-extrabold text-black uppercase tracking-wider hover:bg-amber-400 transition-colors shadow-lg cursor-pointer"
+              >
+                Concluído
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
+
+function SoundConfigSection({
+  soundSettings,
+  onUpdateSettings,
+}: {
+  soundSettings: SoundSettings;
+  onUpdateSettings: (newSettings: SoundSettings) => void;
+}) {
+  return (
+    <div className="rounded-2xl border border-zinc-800 bg-zinc-900/90 p-5 space-y-5 shadow-xl">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-zinc-800 pb-4">
+        <div className="flex items-center gap-3">
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-amber-500/10 text-amber-400 border border-amber-500/30 shrink-0">
+            <Volume2 className="h-5 w-5" />
+          </div>
+          <div>
+            <h3 className="font-syne text-sm font-bold text-white uppercase tracking-wider">
+              Efeito Sonoro de Agendamentos
+            </h3>
+            <p className="text-xs text-zinc-400">
+              Notificação emitida automaticamente ao receber um novo agendamento com o Administrador logado.
+            </p>
+          </div>
+        </div>
+        <button
+          type="button"
+          onClick={() => playAppointmentNotificationSound(true)}
+          className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 text-amber-400 text-xs font-bold transition-all cursor-pointer active:scale-95 shrink-0"
+        >
+          <Volume2 className="h-4 w-4" />
+          <span>Testar Som Agora</span>
+        </button>
+      </div>
+
+      {/* Ativar / Desativar */}
+      <div className="space-y-2">
+        <label className="text-xs font-bold text-zinc-300 uppercase tracking-wider block">
+          Status da Notificação Sonora
+        </label>
+        <div className="grid grid-cols-2 gap-3">
+          <button
+            type="button"
+            onClick={() => onUpdateSettings({ ...soundSettings, enabled: true })}
+            className={`flex items-center justify-center gap-2 p-3 rounded-xl border text-xs font-extrabold transition-all cursor-pointer ${
+              soundSettings.enabled
+                ? 'border-emerald-500 bg-emerald-500/10 text-emerald-400 shadow-md'
+                : 'border-zinc-800 bg-zinc-950 text-zinc-400 hover:border-zinc-700'
+            }`}
+          >
+            <Volume2 className="h-4 w-4" />
+            <span>Som Ativado</span>
+            {soundSettings.enabled && <Check className="h-4 w-4 ml-1" />}
+          </button>
+
+          <button
+            type="button"
+            onClick={() => onUpdateSettings({ ...soundSettings, enabled: false })}
+            className={`flex items-center justify-center gap-2 p-3 rounded-xl border text-xs font-extrabold transition-all cursor-pointer ${
+              !soundSettings.enabled
+                ? 'border-red-500 bg-red-500/10 text-red-400 shadow-md'
+                : 'border-zinc-800 bg-zinc-950 text-zinc-400 hover:border-zinc-700'
+            }`}
+          >
+            <VolumeX className="h-4 w-4" />
+            <span>Som Desativado</span>
+            {!soundSettings.enabled && <Check className="h-4 w-4 ml-1" />}
+          </button>
+        </div>
+      </div>
+
+      {/* Origem do Som */}
+      <div className="space-y-3">
+        <label className="text-xs font-bold text-zinc-300 uppercase tracking-wider block">
+          Origem do Efeito Sonoro
+        </label>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+          {/* Opção 1: Som Padrão */}
+          <div
+            onClick={() => onUpdateSettings({ ...soundSettings, soundType: 'default' })}
+            className={`p-4 rounded-xl border cursor-pointer transition-all space-y-2 ${
+              soundSettings.soundType === 'default'
+                ? 'border-amber-500 bg-amber-500/10 text-white shadow-lg'
+                : 'border-zinc-800 bg-zinc-950 text-zinc-400 hover:border-zinc-700'
+            }`}
+          >
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Sparkles className="h-4 w-4 text-amber-400" />
+                <span className="font-extrabold text-xs text-white">Som Padrão (Barbarium Chime)</span>
+              </div>
+              {soundSettings.soundType === 'default' && (
+                <span className="text-[10px] font-black uppercase bg-amber-400 text-black px-2 py-0.5 rounded-full">
+                  Ativo
+                </span>
+              )}
+            </div>
+            <p className="text-[11px] text-zinc-400">
+              Sinal sonoro padrão da barbearia (Harmonia tripla de alta nitidez). Som original já integrado.
+            </p>
+          </div>
+
+          {/* Opção 2: Som do Dispositivo */}
+          <div
+            onClick={() => onUpdateSettings({ ...soundSettings, soundType: 'custom' })}
+            className={`p-4 rounded-xl border cursor-pointer transition-all space-y-2 ${
+              soundSettings.soundType === 'custom'
+                ? 'border-amber-500 bg-amber-500/10 text-white shadow-lg'
+                : 'border-zinc-800 bg-zinc-950 text-zinc-400 hover:border-zinc-700'
+            }`}
+          >
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Music className="h-4 w-4 text-amber-400" />
+                <span className="font-extrabold text-xs text-white">Áudio do Dispositivo</span>
+              </div>
+              {soundSettings.soundType === 'custom' && (
+                <span className="text-[10px] font-black uppercase bg-amber-400 text-black px-2 py-0.5 rounded-full">
+                  Ativo
+                </span>
+              )}
+            </div>
+            <p className="text-[11px] text-zinc-400">
+              Carregue um arquivo de áudio (MP3, WAV, OGG, M4A) da memória do seu celular ou computador.
+            </p>
+          </div>
+        </div>
+
+        {/* Upload Box do Dispositivo */}
+        {soundSettings.soundType === 'custom' && (
+          <div className="mt-3 bg-zinc-950 border border-zinc-800 p-4 rounded-xl space-y-3">
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <span className="text-xs font-extrabold text-zinc-300">
+                Arquivo Carregado:
+              </span>
+              {soundSettings.customSoundName ? (
+                <span className="text-xs font-bold text-amber-400 bg-amber-500/10 px-3 py-1 rounded-lg border border-amber-500/30 truncate max-w-[240px]">
+                  🎵 {soundSettings.customSoundName}
+                </span>
+              ) : (
+                <span className="text-xs text-amber-400/80 italic font-semibold">
+                  Nenhum arquivo de áudio carregado ainda
+                </span>
+              )}
+            </div>
+
+            <div className="flex flex-wrap items-center gap-3 pt-1">
+              <label className="cursor-pointer inline-flex items-center gap-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-black font-extrabold px-4 py-2.5 text-xs transition-colors shadow-lg shadow-amber-500/10 active:scale-95">
+                <Upload className="h-4 w-4" />
+                <span>{soundSettings.customSoundUrl ? 'Substituir Áudio do Dispositivo' : 'Carregar Áudio do Dispositivo (MP3/WAV)'}</span>
+                <input
+                  type="file"
+                  accept="audio/*"
+                  className="hidden"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (file) {
+                      if (file.size > 8 * 1024 * 1024) {
+                        alert('⚠️ O arquivo de áudio deve ter no máximo 8MB.');
+                        return;
+                      }
+                      const reader = new FileReader();
+                      reader.onload = (event) => {
+                        const base64Data = event.target?.result as string;
+                        if (base64Data) {
+                          onUpdateSettings({
+                            ...soundSettings,
+                            soundType: 'custom',
+                            customSoundUrl: base64Data,
+                            customSoundName: file.name
+                          });
+                        }
+                      };
+                      reader.readAsDataURL(file);
+                    }
+                  }}
+                />
+              </label>
+
+              {soundSettings.customSoundUrl && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    onUpdateSettings({
+                      ...soundSettings,
+                      soundType: 'default',
+                      customSoundUrl: '',
+                      customSoundName: ''
+                    });
+                  }}
+                  className="px-3.5 py-2.5 rounded-xl border border-red-500/30 bg-red-500/10 hover:bg-red-500/20 text-xs font-bold text-red-400 transition-colors cursor-pointer"
+                >
+                  Restaurar Som Padrão
+                </button>
+              )}
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
