@@ -151,31 +151,50 @@ export function subscribeInsumos(onData: (items: InsumoItem[]) => void): () => v
       INSUMOS_COLLECTION,
       (items) => {
         if (!items || items.length === 0) {
-          // Seed defaults if empty
-          DEFAULT_INSUMOS.forEach((item) => {
-            addDocument(INSUMOS_COLLECTION, item, item.id);
-          });
-          onData(DEFAULT_INSUMOS);
+          const seededNow = localStorage.getItem('jadson_insumos_seeded');
+          if (!seededNow) {
+            DEFAULT_INSUMOS.forEach((item) => {
+              addDocument(INSUMOS_COLLECTION, item, item.id);
+            });
+            localStorage.setItem('jadson_insumos_seeded', 'true');
+            localStorage.setItem('jadson_insumos_v1', JSON.stringify(DEFAULT_INSUMOS));
+            onData(DEFAULT_INSUMOS);
+          } else {
+            localStorage.setItem('jadson_insumos_v1', JSON.stringify([]));
+            onData([]);
+          }
         } else {
+          localStorage.setItem('jadson_insumos_seeded', 'true');
+          localStorage.setItem('jadson_insumos_v1', JSON.stringify(items));
           onData(items);
         }
       },
       () => {
         // Fallback to local storage
         const saved = localStorage.getItem('jadson_insumos_v1');
+        const seededNow = localStorage.getItem('jadson_insumos_seeded');
         if (saved) {
           try { onData(JSON.parse(saved)); } catch { onData(DEFAULT_INSUMOS); }
-        } else {
+        } else if (!seededNow) {
+          localStorage.setItem('jadson_insumos_seeded', 'true');
+          localStorage.setItem('jadson_insumos_v1', JSON.stringify(DEFAULT_INSUMOS));
           onData(DEFAULT_INSUMOS);
+        } else {
+          onData([]);
         }
       }
     );
   } catch {
     const saved = localStorage.getItem('jadson_insumos_v1');
+    const seededNow = localStorage.getItem('jadson_insumos_seeded');
     if (saved) {
       try { onData(JSON.parse(saved)); } catch { onData(DEFAULT_INSUMOS); }
-    } else {
+    } else if (!seededNow) {
+      localStorage.setItem('jadson_insumos_seeded', 'true');
+      localStorage.setItem('jadson_insumos_v1', JSON.stringify(DEFAULT_INSUMOS));
       onData(DEFAULT_INSUMOS);
+    } else {
+      onData([]);
     }
     return () => {};
   }
@@ -206,11 +225,14 @@ export async function saveInsumoItem(item: Omit<InsumoItem, 'id'> & { id?: strin
     current.push(payload);
   }
   localStorage.setItem('jadson_insumos_v1', JSON.stringify(current));
+  localStorage.setItem('jadson_insumos_seeded', 'true');
   return id;
 }
 
 // Delete Insumo
 export async function deleteInsumoItem(id: string): Promise<void> {
+  localStorage.setItem('jadson_insumos_seeded', 'true');
+
   try {
     await deleteDocument(INSUMOS_COLLECTION, id);
   } catch (err) {
@@ -218,11 +240,9 @@ export async function deleteInsumoItem(id: string): Promise<void> {
   }
 
   const saved = localStorage.getItem('jadson_insumos_v1');
-  if (saved) {
-    let current: InsumoItem[] = JSON.parse(saved);
-    current = current.filter(i => i.id !== id);
-    localStorage.setItem('jadson_insumos_v1', JSON.stringify(current));
-  }
+  let current: InsumoItem[] = saved ? JSON.parse(saved) : DEFAULT_INSUMOS;
+  current = current.filter(i => i.id !== id);
+  localStorage.setItem('jadson_insumos_v1', JSON.stringify(current));
 }
 
 // Subscribe Produtos de Venda
@@ -232,30 +252,49 @@ export function subscribeProdutosVenda(onData: (items: ProdutoVenda[]) => void):
       PRODUTOS_VENDA_COLLECTION,
       (items) => {
         if (!items || items.length === 0) {
-          // Seed defaults
-          DEFAULT_PRODUTOS_VENDA.forEach((item) => {
-            addDocument(PRODUTOS_VENDA_COLLECTION, item, item.id);
-          });
-          onData(DEFAULT_PRODUTOS_VENDA);
+          const seededNow = localStorage.getItem('jadson_produtos_venda_seeded');
+          if (!seededNow) {
+            DEFAULT_PRODUTOS_VENDA.forEach((item) => {
+              addDocument(PRODUTOS_VENDA_COLLECTION, item, item.id);
+            });
+            localStorage.setItem('jadson_produtos_venda_seeded', 'true');
+            localStorage.setItem('jadson_produtos_venda_v1', JSON.stringify(DEFAULT_PRODUTOS_VENDA));
+            onData(DEFAULT_PRODUTOS_VENDA);
+          } else {
+            localStorage.setItem('jadson_produtos_venda_v1', JSON.stringify([]));
+            onData([]);
+          }
         } else {
+          localStorage.setItem('jadson_produtos_venda_seeded', 'true');
+          localStorage.setItem('jadson_produtos_venda_v1', JSON.stringify(items));
           onData(items);
         }
       },
       () => {
         const saved = localStorage.getItem('jadson_produtos_venda_v1');
+        const seededNow = localStorage.getItem('jadson_produtos_venda_seeded');
         if (saved) {
           try { onData(JSON.parse(saved)); } catch { onData(DEFAULT_PRODUTOS_VENDA); }
-        } else {
+        } else if (!seededNow) {
+          localStorage.setItem('jadson_produtos_venda_seeded', 'true');
+          localStorage.setItem('jadson_produtos_venda_v1', JSON.stringify(DEFAULT_PRODUTOS_VENDA));
           onData(DEFAULT_PRODUTOS_VENDA);
+        } else {
+          onData([]);
         }
       }
     );
   } catch {
     const saved = localStorage.getItem('jadson_produtos_venda_v1');
+    const seededNow = localStorage.getItem('jadson_produtos_venda_seeded');
     if (saved) {
       try { onData(JSON.parse(saved)); } catch { onData(DEFAULT_PRODUTOS_VENDA); }
-    } else {
+    } else if (!seededNow) {
+      localStorage.setItem('jadson_produtos_venda_seeded', 'true');
+      localStorage.setItem('jadson_produtos_venda_v1', JSON.stringify(DEFAULT_PRODUTOS_VENDA));
       onData(DEFAULT_PRODUTOS_VENDA);
+    } else {
+      onData([]);
     }
     return () => {};
   }
@@ -285,11 +324,14 @@ export async function saveProdutoVenda(item: Omit<ProdutoVenda, 'id'> & { id?: s
     current.push(payload);
   }
   localStorage.setItem('jadson_produtos_venda_v1', JSON.stringify(current));
+  localStorage.setItem('jadson_produtos_venda_seeded', 'true');
   return id;
 }
 
 // Delete Produto de Venda
 export async function deleteProdutoVenda(id: string): Promise<void> {
+  localStorage.setItem('jadson_produtos_venda_seeded', 'true');
+
   try {
     await deleteDocument(PRODUTOS_VENDA_COLLECTION, id);
   } catch (err) {
@@ -297,9 +339,7 @@ export async function deleteProdutoVenda(id: string): Promise<void> {
   }
 
   const saved = localStorage.getItem('jadson_produtos_venda_v1');
-  if (saved) {
-    let current: ProdutoVenda[] = JSON.parse(saved);
-    current = current.filter(p => p.id !== id);
-    localStorage.setItem('jadson_produtos_venda_v1', JSON.stringify(current));
-  }
+  let current: ProdutoVenda[] = saved ? JSON.parse(saved) : DEFAULT_PRODUTOS_VENDA;
+  current = current.filter(p => p.id !== id);
+  localStorage.setItem('jadson_produtos_venda_v1', JSON.stringify(current));
 }

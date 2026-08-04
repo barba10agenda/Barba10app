@@ -67,7 +67,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             Agendar
           </button>
 
-          {currentUser && currentUser.role === 'client' && (
+          {currentUser && (
             <button
               onClick={() => setActiveView('my-appointments')}
               className={`flex items-center gap-1.5 text-sm uppercase tracking-widest transition-colors ${
@@ -78,20 +78,6 @@ export const Navbar: React.FC<NavbarProps> = ({
             >
               <CalendarCheck2 className="h-3.5 w-3.5 text-yellow-400" />
               Meus Agendamentos
-            </button>
-          )}
-
-          {currentUser && currentUser.role === 'admin' && (
-            <button
-              onClick={() => setActiveView('admin')}
-              className={`flex items-center gap-1.5 rounded-full px-4 py-1.5 text-xs font-bold uppercase tracking-widest transition-all ${
-                activeView === 'admin'
-                  ? 'bg-yellow-400 text-black shadow-[0_0_20px_rgba(234,179,8,0.3)]'
-                  : 'bg-white/5 text-yellow-400 border border-yellow-500/30 hover:bg-yellow-500/10'
-              }`}
-            >
-              <ShieldCheck className="h-3.5 w-3.5" />
-              Painel Admin
             </button>
           )}
         </nav>
@@ -108,15 +94,23 @@ export const Navbar: React.FC<NavbarProps> = ({
           {/* User Logged or Discreet Login Button */}
           {currentUser ? (
             <div className="flex items-center gap-3">
-              <div className="text-right flex flex-col justify-center">
+              <button
+                onClick={() => {
+                  if (currentUser.role === 'admin') {
+                    setActiveView('admin');
+                  }
+                }}
+                className="text-right flex flex-col justify-center cursor-pointer text-left focus:outline-none"
+                title={currentUser.role === 'admin' ? "Painel Geral" : undefined}
+              >
                 <p className="text-xs font-bold text-white leading-tight">{currentUser.name}</p>
-                <p className="text-[10px] text-yellow-400 uppercase tracking-widest font-bold">{currentUser.role === 'admin' ? 'Administrador' : 'Cliente'}</p>
-              </div>
+                <p className="text-[10px] text-yellow-400 uppercase tracking-widest font-bold">Cliente</p>
+              </button>
 
               {currentUser.role === 'admin' && activeView === 'admin' && onOpenAdminSidebar ? (
                 <button
                   onClick={onOpenAdminSidebar}
-                  title="Abrir Menu do Painel ADM"
+                  title="Abrir Menu"
                   className="flex h-9 w-9 items-center justify-center rounded-lg border border-yellow-500/40 bg-yellow-500/10 text-yellow-400 hover:border-yellow-400 hover:bg-yellow-500/20 transition-all shadow-[0_0_15px_rgba(234,179,8,0.2)]"
                 >
                   <Menu className="h-5 w-5" />

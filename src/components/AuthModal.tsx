@@ -128,31 +128,23 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onLoginSu
           return;
         }
 
-        // Check if logging in with Master Admin email
-        if (registeredAdmin && email.trim().toLowerCase() === registeredAdmin.email.trim().toLowerCase()) {
-          try {
-            const profile = await loginWithEmail(email, password);
-            const adminProfile: UserAccount = profile
-              ? { ...profile, role: 'admin' }
-              : { ...registeredAdmin, email, role: 'admin' };
-            await saveUserProfile(adminProfile).catch(console.error);
-            localStorage.setItem('jadson_barber_admin_account', JSON.stringify(adminProfile));
-            onLoginSuccess(adminProfile);
-            onClose();
-            return;
-          } catch {
-            const adminProfile: UserAccount = { ...registeredAdmin, email, role: 'admin' };
-            await saveUserProfile(adminProfile).catch(console.error);
-            localStorage.setItem('jadson_barber_admin_account', JSON.stringify(adminProfile));
-            onLoginSuccess(adminProfile);
-            onClose();
-            return;
-          }
+        const inputEmail = email.trim().toLowerCase();
+
+        // Prevent Admin from logging in through the client login form
+        if (registeredAdmin && inputEmail === registeredAdmin.email.trim().toLowerCase()) {
+          setErrorMsg('Acesso restrito: Esta é uma conta de Administrador. O login de administrador é feito exclusivamente na área restrita (5 cliques no ícone da tesoura).');
+          setIsLoading(false);
+          return;
         }
 
         try {
           const profile = await loginWithEmail(email, password);
           if (profile) {
+            if (profile.role === 'admin') {
+              setErrorMsg('Acesso restrito: Esta é uma conta de Administrador. O login de administrador é feito exclusivamente na área restrita (5 cliques no ícone da tesoura).');
+              setIsLoading(false);
+              return;
+            }
             onLoginSuccess(profile);
             onClose();
           }
