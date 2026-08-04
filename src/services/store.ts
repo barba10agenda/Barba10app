@@ -7,6 +7,7 @@ import { subscribeBarbers, saveBarber, removeBarber } from './profissionais';
 import { subscribeBlockedSlots, toggleBlockedSlot } from './horarios';
 import { subscribeShopConfig, saveShopConfig, DEFAULT_SHOP_CONFIG, ShopConfig } from './configuracoes';
 import { saveUserAccount } from './usuarios';
+import { checkAndPlayNewAppointmentSound } from '../utils/soundNotification';
 
 // Default initial services (empty for live production)
 export const DEFAULT_SERVICES: Service[] = [];
@@ -56,6 +57,7 @@ export const subscribeRealTime = (callback: () => void) => {
 
   unsubs.push(subscribeAppointments((apts) => {
     cachedAppointments = apts;
+    checkAndPlayNewAppointmentSound(apts, getCurrentUser()?.role);
     callback();
   }));
 

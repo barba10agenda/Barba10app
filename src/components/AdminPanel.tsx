@@ -3,8 +3,9 @@ import {
   ShieldCheck, Calendar, Clock, DollarSign, Users, Scissors, 
   Check, X, AlertCircle, Plus, Edit3, Trash2, Phone, Search, Radio, Database, Sparkles,
   Menu, LogOut, User, ChevronRight, Settings, Save, Layout, FileText, Building, LayoutDashboard, TrendingUp,
-  UserCheck, MessageCircle, Mail, Package, ShoppingBag, Tag, Box, Layers, AlertTriangle, Upload, Image as ImageIcon
+  UserCheck, MessageCircle, Mail, Package, ShoppingBag, Tag, Box, Layers, AlertTriangle, Upload, Image as ImageIcon, Volume2
 } from 'lucide-react';
+import { playAppointmentNotificationSound } from '../utils/soundNotification';
 import { Appointment, Service, Barber, BlockedSlot, AppointmentStatus, UserAccount, InsumoItem, ProdutoVenda } from '../types';
 import { GENERATE_TIME_SLOTS } from '../services/store';
 import { ShopConfig } from '../services/configuracoes';
@@ -609,6 +610,18 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
         >
           <Settings className="h-4 w-4 text-amber-400" />
           Configurações (Página Inicial)
+        </button>
+
+        <button
+          type="button"
+          onClick={() => {
+            playAppointmentNotificationSound();
+          }}
+          title="Clique para testar o sinal sonoro de novos agendamentos"
+          className="ml-auto flex items-center gap-1.5 border-b-2 border-transparent px-4 py-3 text-xs font-bold text-amber-400 hover:text-amber-300 hover:bg-amber-400/10 transition-all shrink-0"
+        >
+          <Volume2 className="h-4 w-4" />
+          <span>Testar Som</span>
         </button>
       </div>
 
