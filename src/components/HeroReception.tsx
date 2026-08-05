@@ -199,19 +199,21 @@ export const HeroReception: React.FC<HeroReceptionProps> = ({
                     height={500}
                     className="h-full w-full object-cover transition-transform duration-500 hover:scale-105"
                   />
-                  <div className="absolute top-1 left-1 flex items-center gap-0.5 rounded bg-black/80 backdrop-blur-md px-1.5 py-0.5 text-[10px] font-bold text-yellow-400 border border-yellow-500/30">
-                    <Star className="h-2.5 w-2.5 fill-yellow-400 text-yellow-400" />
-                    <span>{barber.rating.toFixed(1)}</span>
-                  </div>
                 </div>
 
                 {/* Descrição e Tags ao LADO DIREITO alinhados à imagem */}
                 <div className="flex-1 min-w-0 space-y-2 flex flex-col justify-between py-0.5 text-left">
                   <div className="space-y-1.5">
                     <div>
-                      <span className="rounded bg-emerald-500/20 border border-emerald-500/40 px-1.5 py-0.5 text-[9px] font-bold text-emerald-300 uppercase tracking-widest inline-block mb-1">
-                        DISPONÍVEL HOJE
-                      </span>
+                      <div className="flex items-center justify-between gap-2 mb-1">
+                        <span className="rounded bg-emerald-500/20 border border-emerald-500/40 px-1.5 py-0.5 text-[9px] font-bold text-emerald-300 uppercase tracking-widest inline-block">
+                          DISPONÍVEL HOJE
+                        </span>
+                        <div className="flex items-center gap-1 bg-yellow-400/10 border border-yellow-400/30 px-2 py-0.5 rounded-full shrink-0">
+                          <Star className="h-3 w-3 fill-yellow-400 text-yellow-400" />
+                          <span className="text-xs font-extrabold text-yellow-400">{barber.rating.toFixed(1)}</span>
+                        </div>
+                      </div>
                       <h3 className="font-syne text-base font-bold text-white uppercase tracking-tight truncate">{barber.name}</h3>
                       <p className="text-[11px] font-bold text-yellow-500 uppercase tracking-wider">{barber.role}</p>
                     </div>

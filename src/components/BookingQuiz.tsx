@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { 
-  Scissors, UserCheck, Calendar as CalendarIcon, Clock, Star,
+  Scissors, UserCheck, Calendar as CalendarIcon, Clock, Star, Sparkles,
   ChevronRight, ChevronLeft, Check, AlertCircle, CheckCircle2, ShieldCheck, Plus, Trash2
 } from 'lucide-react';
 import { Service, Barber, UserAccount, Appointment, BlockedSlot } from '../types';
@@ -99,7 +99,26 @@ export const BookingQuiz: React.FC<BookingQuizProps> = ({
   // Calculate occupied time slots for chosen date and barber
   const allTimeSlots = GENERATE_TIME_SLOTS();
 
+  const isPastTimeSlot = (dateIso: string, timeSlot: string) => {
+    const now = new Date();
+    const todayIso = formatDateISO(now);
+
+    if (dateIso < todayIso) return true; // past date
+    if (dateIso > todayIso) return false; // future date
+
+    // Same day: check hour and minute
+    const [slotHour, slotMin] = timeSlot.split(':').map(Number);
+    const currentHour = now.getHours();
+    const currentMin = now.getMinutes();
+
+    if (slotHour < currentHour) return true;
+    if (slotHour === currentHour && slotMin <= currentMin) return true;
+    return false;
+  };
+
   const isSlotOccupied = (timeSlot: string) => {
+    const isPast = isPastTimeSlot(selectedDate, timeSlot);
+
     const hasBooking = appointments.some(
       (apt) =>
         apt.date === selectedDate &&
@@ -119,8 +138,33 @@ export const BookingQuiz: React.FC<BookingQuizProps> = ({
       ? isBarberInLunchBreak(timeSlot, selectedBarber.lunchBreak, selectedBarber.lunchStart, selectedBarber.lunchEnd)
       : barbers.length > 0 && barbers.every((b) => isBarberInLunchBreak(timeSlot, b.lunchBreak, b.lunchStart, b.lunchEnd));
 
-    return hasBooking || isBlocked || inLunchBreak;
+    return isPast || hasBooking || isBlocked || inLunchBreak;
   };
+
+  // Turnos grouping
+  const timeSlotTurnos = [
+    {
+      id: 'manha',
+      label: 'Manhã',
+      icon: '☀️',
+      slots: allTimeSlots.filter((t) => parseInt(t.split(':')[0], 10) < 12),
+    },
+    {
+      id: 'tarde',
+      label: 'Tarde',
+      icon: '🌤️',
+      slots: allTimeSlots.filter((t) => {
+        const h = parseInt(t.split(':')[0], 10);
+        return h >= 12 && h < 18;
+      }),
+    },
+    {
+      id: 'noite',
+      label: 'Noite',
+      icon: '🌙',
+      slots: allTimeSlots.filter((t) => parseInt(t.split(':')[0], 10) >= 18),
+    },
+  ].filter((turno) => turno.slots.length > 0);
 
   // Service toggle helper
   const toggleService = (serviceId: string) => {
@@ -292,10 +336,10 @@ export const BookingQuiz: React.FC<BookingQuizProps> = ({
 
         {/* Steps indicator chips */}
         <div className="grid grid-cols-4 text-center text-[10px] font-bold uppercase tracking-widest text-gray-500">
-          <span className={step >= 1 ? 'text-yellow-400 font-extrabold' : ''}>1. Data & Hora</span>
-          <span className={step >= 2 ? 'text-yellow-400 font-extrabold' : ''}>2. Barbeiro</span>
-          <span className={step >= 3 ? 'text-yellow-400 font-extrabold' : ''}>3. Serviços</span>
-          <span className={step >= 4 ? 'text-yellow-400 font-extrabold' : ''}>4. Resumo</span>
+          <span className={step >= 1 ? 'text-yellow-400 font-extrabold' : ''}>Data & Hora</span>
+          <span className={step >= 2 ? 'text-yellow-400 font-extrabold' : ''}>Barbeiro</span>
+          <span className={step >= 3 ? 'text-yellow-400 font-extrabold' : ''}>Serviços</span>
+          <span className={step >= 4 ? 'text-yellow-400 font-extrabold' : ''}>Resumo</span>
         </div>
       </div>
 
@@ -305,7 +349,7 @@ export const BookingQuiz: React.FC<BookingQuizProps> = ({
           {/* Date Picker Ribbon */}
           <div>
             <label className="text-[10px] font-bold text-yellow-400 uppercase tracking-widest block mb-3">
-              1. Selecione a Data
+              Selecione a Data
             </label>
             <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-thin">
               {availableDates.map((item) => {
@@ -335,45 +379,54 @@ export const BookingQuiz: React.FC<BookingQuizProps> = ({
             </div>
           </div>
 
-          {/* Time Slot Grid */}
-          <div>
-            <div className="flex items-center justify-between mb-3">
+          {/* Time Slot Grid Grouped by Turnos */}
+          <div className="space-y-4">
+            <div className="flex items-center justify-between mb-1">
               <label className="text-[10px] font-bold text-yellow-400 uppercase tracking-widest block">
-                2. Selecione o Horário Disponível ({selectedDate})
+                Selecione o Horário Disponível ({selectedDate})
               </label>
             </div>
 
-            <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-2.5">
-              {allTimeSlots.map((time) => {
-                const occupied = isSlotOccupied(time);
-                const isSelected = selectedTimeSlot === time;
+            {timeSlotTurnos.map((turno) => (
+              <div key={turno.id} className="rounded-xl border border-white/5 bg-white/[0.02] p-3 space-y-2">
+                <div className="flex items-center gap-1.5 text-xs font-bold text-white uppercase tracking-wider">
+                  <span>{turno.icon}</span>
+                  <span className="text-yellow-400 font-syne">{turno.label}</span>
+                </div>
 
-                return (
-                  <button
-                    key={time}
-                    disabled={occupied}
-                    onClick={() => {
-                      setSelectedTimeSlot(time);
-                      scrollToElement(nextButtonStep1Ref, 'nearest');
-                    }}
-                    className={`flex items-center justify-center gap-1.5 rounded-lg border py-3 text-xs font-bold transition-all ${
-                      occupied
-                        ? 'cursor-not-allowed border-white/5 bg-white/[0.02] text-gray-600 line-through'
-                        : isSelected
-                        ? 'border-yellow-400 bg-yellow-400 text-black shadow-[0_0_15px_rgba(234,179,8,0.3)] font-extrabold scale-105'
-                        : 'border-white/10 bg-white/5 text-gray-200 hover:border-yellow-400/50 hover:text-yellow-400'
-                    }`}
-                  >
-                    <Clock className="h-3.5 w-3.5 shrink-0" />
-                    <span>{time}</span>
-                  </button>
-                );
-              })}
-            </div>
+                <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-2">
+                  {turno.slots.map((time) => {
+                    const occupied = isSlotOccupied(time);
+                    const isSelected = selectedTimeSlot === time;
+
+                    return (
+                      <button
+                        key={time}
+                        disabled={occupied}
+                        onClick={() => {
+                          setSelectedTimeSlot(time);
+                          scrollToElement(nextButtonStep1Ref, 'nearest');
+                        }}
+                        className={`flex items-center justify-center gap-1.5 rounded-lg border py-2.5 text-xs font-bold transition-all ${
+                          occupied
+                            ? 'cursor-not-allowed border-white/5 bg-white/[0.02] text-gray-600 line-through'
+                            : isSelected
+                            ? 'border-yellow-400 bg-yellow-400 text-black shadow-[0_0_15px_rgba(234,179,8,0.3)] font-extrabold scale-105'
+                            : 'border-white/10 bg-white/5 text-gray-200 hover:border-yellow-400/50 hover:text-yellow-400'
+                        }`}
+                      >
+                        <Clock className="h-3.5 w-3.5 shrink-0" />
+                        <span>{time}</span>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            ))}
 
             <p className="mt-4 text-[11px] text-gray-400 flex items-center gap-1.5">
               <AlertCircle className="h-3.5 w-3.5 text-yellow-400 shrink-0" />
-              <span>Horários <span className="line-through text-gray-600">riscados</span> já possuem agendamento ou estão bloqueados.</span>
+              <span>Horários <span className="line-through text-gray-600">riscados</span> já possuem agendamento, passaram ou estão bloqueados.</span>
             </p>
           </div>
 
@@ -771,10 +824,11 @@ export const BookingQuiz: React.FC<BookingQuizProps> = ({
               <div className="pt-2 flex justify-center">
                 <button
                   onClick={onOpenAuth}
-                  className="flex items-center justify-center gap-2 rounded-lg bg-yellow-400 px-8 py-3.5 text-xs font-extrabold uppercase tracking-widest text-black shadow-lg hover:bg-yellow-300 transition-all"
+                  className="btn-golden-glow animate-gold-flow flex items-center justify-center gap-2.5 rounded-xl px-8 py-4 text-xs font-black uppercase tracking-widest text-black shadow-2xl cursor-pointer border border-yellow-200/40"
                 >
-                  <UserCheck className="h-4 w-4" />
+                  <UserCheck className="h-4 w-4 text-black stroke-[2.5]" />
                   <span>ENTRAR / CADASTRAR PARA FINALIZAR</span>
+                  <Sparkles className="h-4 w-4 text-black/80" />
                 </button>
               </div>
             </div>
@@ -787,10 +841,13 @@ export const BookingQuiz: React.FC<BookingQuizProps> = ({
 
               <button
                 onClick={handleFinalSubmit}
-                className="w-full flex items-center justify-center gap-2 rounded-lg bg-yellow-400 py-4 text-xs font-extrabold uppercase tracking-widest text-black shadow-xl hover:bg-yellow-300 transition-all"
+                className="btn-golden-glow animate-gold-flow w-full flex items-center justify-center gap-2.5 rounded-2xl py-4.5 px-6 text-xs sm:text-sm font-black uppercase tracking-widest text-black shadow-2xl cursor-pointer border border-yellow-200/50"
               >
-                <CheckCircle2 className="h-4 w-4" />
+                <div className="flex h-6 w-6 items-center justify-center rounded-full bg-black/10 border border-black/20">
+                  <CheckCircle2 className="h-4 w-4 text-black stroke-[3]" />
+                </div>
                 <span>CONFIRMAR AGENDAMENTO EM TEMPO REAL</span>
+                <Sparkles className="h-4 w-4 text-black/80 shrink-0" />
               </button>
             </div>
           )}

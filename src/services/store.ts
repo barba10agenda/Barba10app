@@ -1,7 +1,7 @@
 import { Appointment, Barber, Service, BlockedSlot, UserAccount } from '../types';
 import { db } from '../firebase/firebaseConfig';
 import { collection, getDocs, doc, setDoc } from 'firebase/firestore';
-import { subscribeAppointments, createAppointment, updateAppointmentStatus, removeAppointment } from './agendamentos';
+import { subscribeAppointments, createAppointment, updateAppointmentStatus, updateAppointment, removeAppointment } from './agendamentos';
 import { subscribeServices, saveService, removeService } from './servicos';
 import { subscribeBarbers, saveBarber, removeBarber } from './profissionais';
 import { subscribeBlockedSlots, toggleBlockedSlot } from './horarios';
@@ -137,6 +137,7 @@ export const setCurrentUser = (user: UserAccount | null) => {
 export {
   createAppointment,
   updateAppointmentStatus,
+  updateAppointment,
   removeAppointment,
   saveService,
   removeService,

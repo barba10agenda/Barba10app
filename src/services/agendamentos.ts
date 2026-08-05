@@ -55,6 +55,10 @@ export async function updateAppointmentStatus(id: string, status: AppointmentSta
   await updateDocument<Appointment>(APPOINTMENTS_COLLECTION, id, { status });
 }
 
+export async function updateAppointment(id: string, updates: Partial<Appointment>): Promise<void> {
+  await updateDocument<Appointment>(APPOINTMENTS_COLLECTION, id, updates);
+}
+
 export async function cancelAppointment(id: string): Promise<void> {
   await updateAppointmentStatus(id, 'cancelado');
 }

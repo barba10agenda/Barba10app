@@ -21,6 +21,7 @@ import {
   subscribeRealTime,
   createAppointment,
   updateAppointmentStatus,
+  updateAppointment,
   removeAppointment,
   saveService,
   removeService,
@@ -32,7 +33,7 @@ import { testConnection } from './firebase/testConnection';
 import { logoutUser } from './firebase/auth';
 import { ShopConfig, saveShopConfig } from './services/configuracoes';
 import { Appointment, Service, Barber, BlockedSlot, UserAccount, AppointmentStatus } from './types';
-import { Scissors, MapPin, Phone, Instagram, Clock, ShieldCheck, Sparkles } from 'lucide-react';
+import { Scissors, Home, CalendarCheck2, ShieldCheck, MapPin, Phone, Instagram, Clock, Sparkles } from 'lucide-react';
 
 export default function App() {
   // Navigation View State
@@ -109,6 +110,10 @@ export default function App() {
     await updateAppointmentStatus(id, status);
   };
 
+  const handleUpdateAppointment = async (id: string, updates: Partial<Appointment>) => {
+    await updateAppointment(id, updates);
+  };
+
   const handleDeleteAppointment = async (id: string) => {
     await removeAppointment(id);
   };
@@ -160,7 +165,7 @@ export default function App() {
       />
 
       {/* Main Container */}
-      <main className="flex-1 mx-auto w-full max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+      <main className="flex-1 mx-auto w-full max-w-7xl px-4 py-8 pb-24 md:pb-12 sm:px-6 lg:px-8">
         
         {activeView === 'home' && (
           <HeroReception
@@ -190,7 +195,11 @@ export default function App() {
           <ClientAppointments
             currentUser={currentUser}
             appointments={appointments}
+            services={services}
+            barbers={barbers}
+            blockedSlots={blockedSlots}
             onCancelAppointment={(id) => handleUpdateAppointmentStatus(id, 'cancelado')}
+            onUpdateAppointment={handleUpdateAppointment}
             onBackToHome={() => setActiveView('home')}
           />
         )}
@@ -240,8 +249,69 @@ export default function App() {
       />
 
       {/* Footer */}
-      <footer className="border-t border-white/10 bg-[#080808]/90 py-10 mt-auto">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 space-y-6">
+      <footer className="border-t border-white/10 bg-[#080808]/90 py-10 mb-14 md:mb-0 mt-auto">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 space-y-8">
+          
+          {/* Quick Access Section in Footer */}
+          <div className="rounded-2xl border border-yellow-500/20 bg-gradient-to-r from-zinc-950 via-zinc-900 to-zinc-950 p-5 shadow-xl">
+            <span className="text-[10px] font-bold text-yellow-400 uppercase tracking-widest block mb-3 text-center sm:text-left">
+              Acesso Rápido
+            </span>
+            <div className="flex flex-wrap items-center justify-center sm:justify-start gap-3">
+              <button
+                onClick={() => setActiveView('home')}
+                className={`flex items-center gap-2 rounded-xl border px-4 py-2.5 text-xs font-bold transition-all cursor-pointer ${
+                  activeView === 'home'
+                    ? 'border-yellow-400 bg-yellow-400 text-black shadow-md font-extrabold'
+                    : 'border-white/10 bg-white/5 text-gray-300 hover:border-yellow-400/50 hover:text-yellow-400'
+                }`}
+              >
+                <Home className="h-4 w-4" />
+                <span>Início</span>
+              </button>
+
+              <button
+                onClick={() => setActiveView('quiz')}
+                className={`flex items-center gap-2 rounded-xl border px-4 py-2.5 text-xs font-bold transition-all cursor-pointer ${
+                  activeView === 'quiz'
+                    ? 'border-yellow-400 bg-yellow-400 text-black shadow-md font-extrabold'
+                    : 'border-yellow-500/30 bg-yellow-500/10 text-yellow-400 hover:bg-yellow-500/20'
+                }`}
+              >
+                <Scissors className="h-4 w-4" />
+                <span>Agendar Horário</span>
+              </button>
+
+              {currentUser && (
+                <button
+                  onClick={() => setActiveView('my-appointments')}
+                  className={`flex items-center gap-2 rounded-xl border px-4 py-2.5 text-xs font-bold transition-all cursor-pointer ${
+                    activeView === 'my-appointments'
+                      ? 'border-yellow-400 bg-yellow-400 text-black shadow-md font-extrabold'
+                      : 'border-white/10 bg-white/5 text-gray-300 hover:border-yellow-400/50 hover:text-yellow-400'
+                  }`}
+                >
+                  <CalendarCheck2 className="h-4 w-4 text-yellow-400" />
+                  <span>Meus Agendamentos</span>
+                </button>
+              )}
+
+              {currentUser?.role === 'admin' && (
+                <button
+                  onClick={() => setActiveView('admin')}
+                  className={`flex items-center gap-2 rounded-xl border px-4 py-2.5 text-xs font-bold transition-all cursor-pointer ${
+                    activeView === 'admin'
+                      ? 'border-amber-400 bg-amber-400 text-black shadow-md font-extrabold'
+                      : 'border-amber-500/30 bg-amber-500/10 text-amber-400 hover:bg-amber-500/20'
+                  }`}
+                >
+                  <ShieldCheck className="h-4 w-4 text-amber-400" />
+                  <span>Painel ADM</span>
+                </button>
+              )}
+            </div>
+          </div>
+
           <div className="flex flex-col sm:flex-row items-start justify-between gap-6 border-b border-white/5 pb-6">
             {/* Top: Brand & Logo */}
             <div className="flex items-center gap-3 text-left">
@@ -275,6 +345,61 @@ export default function App() {
           </div>
         </div>
       </footer>
+
+      {/* Mobile Sticky Bottom Quick Access Bar */}
+      <nav className="fixed bottom-0 left-0 right-0 z-40 bg-[#080808]/95 backdrop-blur-xl border-t border-yellow-500/20 px-3 py-2 flex items-center justify-around shadow-[0_-10px_25px_rgba(0,0,0,0.8)] md:hidden">
+        <button
+          onClick={() => setActiveView('home')}
+          className={`flex flex-col items-center gap-1 text-[10px] font-bold uppercase tracking-wider px-3 py-1.5 rounded-xl transition-all cursor-pointer ${
+            activeView === 'home'
+              ? 'text-yellow-400 bg-yellow-500/15 border border-yellow-500/30 font-extrabold'
+              : 'text-gray-400 hover:text-white'
+          }`}
+        >
+          <Home className="h-4 w-4" />
+          <span>Início</span>
+        </button>
+
+        <button
+          onClick={() => setActiveView('quiz')}
+          className={`flex flex-col items-center gap-1 text-[10px] font-bold uppercase tracking-wider px-3 py-1.5 rounded-xl border transition-all cursor-pointer ${
+            activeView === 'quiz'
+              ? 'bg-yellow-400 text-black border-yellow-400 shadow-lg font-extrabold'
+              : 'text-yellow-400 border-yellow-500/30 bg-yellow-500/10'
+          }`}
+        >
+          <Scissors className="h-4 w-4" />
+          <span>Agendar</span>
+        </button>
+
+        {currentUser && (
+          <button
+            onClick={() => setActiveView('my-appointments')}
+            className={`flex flex-col items-center gap-1 text-[10px] font-bold uppercase tracking-wider px-3 py-1.5 rounded-xl transition-all cursor-pointer ${
+              activeView === 'my-appointments'
+                ? 'text-yellow-400 bg-yellow-500/15 border border-yellow-500/30 font-extrabold'
+                : 'text-gray-400 hover:text-white'
+            }`}
+          >
+            <CalendarCheck2 className="h-4 w-4 text-yellow-400" />
+            <span>Agenda</span>
+          </button>
+        )}
+
+        {currentUser?.role === 'admin' && (
+          <button
+            onClick={() => setActiveView('admin')}
+            className={`flex flex-col items-center gap-1 text-[10px] font-bold uppercase tracking-wider px-3 py-1.5 rounded-xl transition-all cursor-pointer ${
+              activeView === 'admin'
+                ? 'text-amber-400 bg-amber-500/15 border border-amber-500/30 font-extrabold'
+                : 'text-amber-500/80 hover:text-amber-400'
+            }`}
+          >
+            <ShieldCheck className="h-4 w-4 text-amber-400" />
+            <span>Painel</span>
+          </button>
+        )}
+      </nav>
 
     </div>
   );

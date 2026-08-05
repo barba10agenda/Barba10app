@@ -55,7 +55,7 @@ export const ClientDrawer: React.FC<ClientDrawerProps> = ({
       <div className="absolute inset-0" onClick={onClose} />
 
       {/* Drawer Container */}
-      <div className="relative w-full max-w-xs sm:max-w-sm bg-zinc-950 border-r border-yellow-500/20 h-full flex flex-col justify-between shadow-2xl z-10 overflow-y-auto">
+      <div className="relative w-full max-w-xs sm:max-w-sm bg-zinc-950 border-r border-yellow-500/20 h-full flex flex-col justify-between shadow-2xl z-10 overflow-y-auto animate-in slide-in-from-left duration-200">
         
         {/* Top Header */}
         <div className="p-5 border-b border-zinc-800/80 bg-gradient-to-b from-zinc-900 to-zinc-950">
@@ -174,22 +174,18 @@ export const ClientDrawer: React.FC<ClientDrawerProps> = ({
 
         {/* Footer & Logout */}
         <div className="p-4 border-t border-zinc-900 bg-zinc-950 space-y-3">
-          <div className="text-[11px] text-zinc-300 space-y-2 px-2 rounded-xl bg-zinc-900/50 p-3 border border-zinc-800/80">
-            <p className="font-syne font-extrabold text-white uppercase text-xs tracking-wider">
+          <div className="text-[11px] text-zinc-400 space-y-1.5 px-2">
+            <p className="font-bold text-white uppercase text-[10px] tracking-wider">
               {shopConfig?.shopName || 'Jadson Barber'}
             </p>
-            <p className="flex items-center gap-2 text-zinc-300 text-[11px] font-medium">
-              <Phone className="h-3.5 w-3.5 text-yellow-400 shrink-0" />
-              <span>{shopConfig?.phone || '(11) 99999-2525'}</span>
-            </p>
-            <p className="flex items-center gap-2 text-zinc-300 text-[11px] font-medium">
-              <Instagram className="h-3.5 w-3.5 text-yellow-400 shrink-0" />
-              <span>{shopConfig?.instagram || '@jadsonbarber'}</span>
-            </p>
-            {shopConfig?.address && (
-              <p className="flex items-start gap-2 text-zinc-300 text-[11px] font-medium">
-                <MapPin className="h-3.5 w-3.5 text-yellow-400 shrink-0 mt-0.5" />
-                <span className="leading-tight">{shopConfig.address}</span>
+            {shopConfig?.phone && (
+              <p className="flex items-center gap-1.5">
+                <Phone className="h-3 w-3 text-yellow-400" /> {shopConfig.phone}
+              </p>
+            )}
+            {shopConfig?.instagram && (
+              <p className="flex items-center gap-1.5">
+                <Instagram className="h-3 w-3 text-yellow-400" /> {shopConfig.instagram}
               </p>
             )}
           </div>
