@@ -307,53 +307,53 @@ export const BookingQuiz: React.FC<BookingQuizProps> = ({
   // If loading booking animation is active
   if (isBookingLoading) {
     return (
-      <div className="mx-auto max-w-xl rounded-3xl border border-yellow-500/30 bg-[#0F0F0F] p-6 sm:p-10 text-center shadow-2xl backdrop-blur-md relative overflow-hidden my-2 sm:my-4">
+      <div className="mx-auto max-w-lg rounded-2xl border border-yellow-500/30 bg-[#0F0F0F] p-4 sm:p-6 text-center shadow-2xl backdrop-blur-md relative overflow-hidden my-1 sm:my-3">
         {/* Background ambient glow */}
-        <div className="absolute -top-20 -left-20 h-56 w-56 rounded-full bg-yellow-500/10 blur-3xl pointer-events-none" />
-        <div className="absolute -bottom-20 -right-20 h-56 w-56 rounded-full bg-yellow-500/15 blur-3xl pointer-events-none" />
+        <div className="absolute -top-20 -left-20 h-48 w-48 rounded-full bg-yellow-500/10 blur-3xl pointer-events-none" />
+        <div className="absolute -bottom-20 -right-20 h-48 w-48 rounded-full bg-yellow-500/15 blur-3xl pointer-events-none" />
 
-        <div className="relative z-10 space-y-6">
+        <div className="relative z-10 space-y-3.5 sm:space-y-4">
           {/* Animated Barber Scissors / Ring */}
-          <div className="relative mx-auto flex h-24 w-24 items-center justify-center">
+          <div className="relative mx-auto flex h-16 w-16 sm:h-20 sm:w-20 items-center justify-center">
             <motion.div
               className="absolute inset-0 rounded-full border-2 border-dashed border-yellow-400/60"
               animate={{ rotate: 360 }}
               transition={{ repeat: Infinity, duration: 4, ease: "linear" }}
             />
             <motion.div
-              className="absolute inset-2 rounded-full border-2 border-yellow-500/30"
-              animate={{ scale: [1, 1.1, 1] }}
+              className="absolute inset-1.5 rounded-full border-2 border-yellow-500/30"
+              animate={{ scale: [1, 1.08, 1] }}
               transition={{ repeat: Infinity, duration: 2, ease: "easeInOut" }}
             />
             <motion.div
-              className="flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-yellow-400 to-yellow-600 text-black shadow-lg shadow-yellow-500/30"
+              className="flex h-12 w-12 sm:h-14 sm:w-14 items-center justify-center rounded-full bg-gradient-to-br from-yellow-400 to-yellow-600 text-black shadow-md shadow-yellow-500/30"
               animate={{ scale: [0.95, 1.05, 0.95] }}
               transition={{ repeat: Infinity, duration: 1.5, ease: "easeInOut" }}
             >
-              <Scissors className="h-8 w-8 animate-pulse stroke-[2.5]" />
+              <Scissors className="h-6 w-6 sm:h-7 sm:w-7 animate-pulse stroke-[2.5]" />
             </motion.div>
           </div>
 
           {/* Text and Step Info */}
-          <div className="space-y-2">
+          <div className="space-y-1">
             <motion.h3 
-              className="font-syne text-xl sm:text-2xl font-black uppercase tracking-wider text-white"
+              className="font-syne text-lg sm:text-xl font-black uppercase tracking-wider text-white"
               animate={{ opacity: [0.7, 1, 0.7] }}
               transition={{ repeat: Infinity, duration: 1.5 }}
             >
               AGENDANDO SEU HORÁRIO...
             </motion.h3>
-            <p className="text-xs font-semibold text-yellow-400 tracking-wide h-5 flex items-center justify-center gap-2">
+            <p className="text-xs font-semibold text-yellow-400 tracking-wide h-5 flex items-center justify-center gap-1.5">
               <Sparkles className="h-3.5 w-3.5 animate-spin" />
               <span>{bookingLoadingText}</span>
             </p>
           </div>
 
           {/* Progress Bar */}
-          <div className="space-y-2 max-w-sm mx-auto">
-            <div className="h-2.5 w-full overflow-hidden rounded-full bg-white/10 p-0.5 border border-white/10">
+          <div className="space-y-1.5 max-w-xs mx-auto">
+            <div className="h-2 w-full overflow-hidden rounded-full bg-white/10 p-0.5 border border-white/10">
               <motion.div
-                className="h-full rounded-full bg-gradient-to-r from-yellow-500 via-amber-300 to-yellow-400 shadow-[0_0_12px_rgba(234,179,8,0.8)]"
+                className="h-full rounded-full bg-gradient-to-r from-yellow-500 via-amber-300 to-yellow-400 shadow-[0_0_10px_rgba(234,179,8,0.8)]"
                 initial={{ width: '0%' }}
                 animate={{ width: `${bookingProgress}%` }}
                 transition={{ duration: 0.5, ease: "easeOut" }}
@@ -365,7 +365,7 @@ export const BookingQuiz: React.FC<BookingQuizProps> = ({
             </div>
           </div>
 
-          <p className="text-[11px] text-gray-400">
+          <p className="text-[10px] sm:text-[11px] text-gray-400">
             Aguarde enquanto confirmamos sua vaga em tempo real.
           </p>
         </div>
@@ -380,36 +380,36 @@ export const BookingQuiz: React.FC<BookingQuizProps> = ({
         initial={{ scale: 0.9, opacity: 0, y: 15 }}
         animate={{ scale: 1, opacity: 1, y: 0 }}
         transition={{ type: "spring", stiffness: 240, damping: 20 }}
-        className="mx-auto max-w-2xl space-y-5 rounded-3xl border border-emerald-500/40 bg-[#0F0F0F] p-5 sm:p-8 shadow-[0_0_50px_rgba(16,185,129,0.2)] backdrop-blur-md relative overflow-hidden my-1 sm:my-3"
+        className="mx-auto max-w-lg space-y-3 rounded-2xl border border-emerald-500/40 bg-[#0F0F0F] p-4 sm:p-6 shadow-[0_0_40px_rgba(16,185,129,0.2)] backdrop-blur-md relative overflow-hidden my-0.5 sm:my-2"
       >
         {/* Success Celebration Background Glows */}
-        <div className="absolute -top-24 -left-24 h-64 w-64 rounded-full bg-emerald-500/15 blur-3xl pointer-events-none" />
-        <div className="absolute -bottom-24 -right-24 h-64 w-64 rounded-full bg-yellow-500/15 blur-3xl pointer-events-none" />
+        <div className="absolute -top-20 -left-20 h-48 w-48 rounded-full bg-emerald-500/15 blur-3xl pointer-events-none" />
+        <div className="absolute -bottom-20 -right-20 h-48 w-48 rounded-full bg-yellow-500/15 blur-3xl pointer-events-none" />
 
         {/* Confetti Sparkles Header */}
-        <div className="text-center space-y-4 relative z-10">
+        <div className="text-center space-y-1.5 relative z-10">
           <motion.div 
             initial={{ scale: 0, rotate: -180 }}
             animate={{ scale: 1, rotate: 0 }}
             transition={{ delay: 0.15, type: "spring", stiffness: 280, damping: 14 }}
-            className="mx-auto flex h-20 w-20 items-center justify-center rounded-2xl bg-gradient-to-br from-emerald-400 to-emerald-600 text-black shadow-xl shadow-emerald-500/30 border border-emerald-300/40"
+            className="mx-auto flex h-12 w-12 sm:h-14 sm:w-14 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-400 to-emerald-600 text-black shadow-lg shadow-emerald-500/30 border border-emerald-300/40"
           >
-            <CheckCircle2 className="h-12 w-12 stroke-[2.5]" />
+            <CheckCircle2 className="h-7 w-7 sm:h-8 sm:w-8 stroke-[2.5]" />
           </motion.div>
 
           <motion.div
-            initial={{ opacity: 0, y: 15 }}
+            initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.35, duration: 0.4 }}
-            className="space-y-1"
+            className="space-y-0.5"
           >
-            <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 px-3 py-1 text-[10px] font-black uppercase tracking-widest text-emerald-400">
-              <Sparkles className="h-3.5 w-3.5" /> CONFIRMADO EM TEMPO REAL
+            <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 px-2 py-0.5 text-[9px] font-black uppercase tracking-widest text-emerald-400">
+              <Sparkles className="h-3 w-3" /> CONFIRMADO EM TEMPO REAL
             </span>
-            <h2 className="font-syne text-3xl sm:text-4xl font-black uppercase tracking-tight text-white pt-1">
+            <h2 className="font-syne text-lg sm:text-xl font-black uppercase tracking-tight text-white pt-0.5">
               AGENDAMENTO CONFIRMADO!
             </h2>
-            <p className="text-xs text-gray-300 max-w-md mx-auto">
+            <p className="text-[11px] text-gray-300 max-w-md mx-auto">
               Seu agendamento foi registrado com sucesso. Nos vemos na barbearia!
             </p>
           </motion.div>
@@ -417,51 +417,51 @@ export const BookingQuiz: React.FC<BookingQuizProps> = ({
 
         {/* Ticket Summary */}
         <motion.div 
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.5, duration: 0.4 }}
-          className="rounded-2xl border border-white/10 bg-black/70 p-6 space-y-4 shadow-inner relative z-10"
+          className="rounded-xl border border-white/10 bg-black/70 p-3 sm:p-4 space-y-2 shadow-inner relative z-10"
         >
-          <div className="flex items-center justify-between border-b border-white/10 pb-3">
-            <div className="flex items-center gap-2 text-xs font-black text-yellow-400 uppercase tracking-wider">
-              <Scissors className="h-4 w-4" /> Jadson Barber Slim
+          <div className="flex items-center justify-between border-b border-white/10 pb-1.5">
+            <div className="flex items-center gap-1.5 text-[11px] font-black text-yellow-400 uppercase tracking-wider">
+              <Scissors className="h-3.5 w-3.5" /> Jadson Barber Slim
             </div>
-            <span className="rounded-full bg-emerald-500/20 border border-emerald-500/40 px-3 py-0.5 text-[11px] font-black text-emerald-300 uppercase tracking-widest flex items-center gap-1">
-              <ShieldCheck className="h-3.5 w-3.5" /> {completedAppointment.status}
+            <span className="rounded-full bg-emerald-500/20 border border-emerald-500/40 px-2 py-0.5 text-[9px] font-black text-emerald-300 uppercase tracking-widest flex items-center gap-1">
+              <ShieldCheck className="h-3 w-3" /> {completedAppointment.status}
             </span>
           </div>
 
-          <div className="grid grid-cols-2 gap-4 text-xs">
+          <div className="grid grid-cols-2 gap-2 text-xs">
             <div>
-              <span className="text-gray-500 block text-[10px] uppercase font-bold tracking-wider">Cliente</span>
-              <strong className="text-white text-sm">{completedAppointment.clientName}</strong>
+              <span className="text-gray-500 block text-[9px] uppercase font-bold tracking-wider">Cliente</span>
+              <strong className="text-white text-[11px]">{completedAppointment.clientName}</strong>
             </div>
             <div>
-              <span className="text-gray-500 block text-[10px] uppercase font-bold tracking-wider">Barbeiro</span>
-              <strong className="text-yellow-400 text-sm">{completedAppointment.barberName}</strong>
+              <span className="text-gray-500 block text-[9px] uppercase font-bold tracking-wider">Barbeiro</span>
+              <strong className="text-yellow-400 text-[11px]">{completedAppointment.barberName}</strong>
             </div>
             <div>
-              <span className="text-gray-500 block text-[10px] uppercase font-bold tracking-wider">Data & Horário</span>
-              <strong className="text-white text-sm">{completedAppointment.date} às {completedAppointment.timeSlot}</strong>
+              <span className="text-gray-500 block text-[9px] uppercase font-bold tracking-wider">Data & Horário</span>
+              <strong className="text-white text-[11px]">{completedAppointment.date} às {completedAppointment.timeSlot}</strong>
             </div>
             <div>
-              <span className="text-gray-500 block text-[10px] uppercase font-bold tracking-wider">Duração Estimada</span>
-              <strong className="text-gray-300 text-sm">{completedAppointment.serviceDuration} min</strong>
+              <span className="text-gray-500 block text-[9px] uppercase font-bold tracking-wider">Duração Estimada</span>
+              <strong className="text-gray-300 text-[11px]">{completedAppointment.serviceDuration} min</strong>
             </div>
             <div className="col-span-2">
-              <span className="text-gray-500 block text-[10px] uppercase font-bold tracking-wider">Serviços Selecionados</span>
-              <strong className="text-white text-sm">{completedAppointment.serviceName}</strong>
+              <span className="text-gray-500 block text-[9px] uppercase font-bold tracking-wider">Serviços Selecionados</span>
+              <strong className="text-white text-[11px]">{completedAppointment.serviceName}</strong>
             </div>
-            <div className="col-span-2 border-t border-white/10 pt-3 flex items-center justify-between">
-              <span className="text-gray-400 text-xs font-bold uppercase tracking-wider">Valor Total</span>
-              <strong className="font-syne text-2xl text-yellow-400 font-black">
+            <div className="col-span-2 border-t border-white/10 pt-1.5 flex items-center justify-between">
+              <span className="text-gray-400 text-[10px] font-bold uppercase tracking-wider">Valor Total</span>
+              <strong className="font-syne text-lg text-yellow-400 font-black">
                 R$ {completedAppointment.servicePrice.toFixed(2).replace('.', ',')}
               </strong>
             </div>
           </div>
 
           {completedAppointment.notes && (
-            <div className="border-t border-white/10 pt-3 text-xs text-gray-400">
+            <div className="border-t border-white/10 pt-1.5 text-[10px] text-gray-400">
               <strong className="text-gray-300">Observação:</strong> {completedAppointment.notes}
             </div>
           )}
@@ -471,13 +471,13 @@ export const BookingQuiz: React.FC<BookingQuizProps> = ({
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.65 }}
-          className="flex justify-center pt-2 relative z-10"
+          className="flex justify-center pt-0.5 relative z-10"
         >
           <button
             onClick={onCancel}
-            className="btn-golden-glow animate-gold-flow rounded-xl px-10 py-4 text-xs font-black uppercase tracking-widest text-black shadow-2xl hover:bg-yellow-300 transition-all cursor-pointer border border-yellow-200/50 flex items-center gap-2"
+            className="btn-golden-glow animate-gold-flow rounded-xl px-6 py-2 text-[10px] font-black uppercase tracking-widest text-black shadow-lg hover:bg-yellow-300 transition-all cursor-pointer border border-yellow-200/50 flex items-center gap-1.5"
           >
-            <Sparkles className="h-4 w-4 text-black" />
+            <Sparkles className="h-3.5 w-3.5 text-black" />
             <span>VOLTAR AO INÍCIO</span>
           </button>
         </motion.div>

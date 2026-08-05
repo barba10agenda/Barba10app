@@ -249,6 +249,12 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
   const [configFormData, setConfigFormData] = useState<ShopConfig>(() => ({
     shopName: shopConfig?.shopName || 'JADSON BARBER',
     shopTagline: shopConfig?.shopTagline || 'ATENDIMENTO SLIM VIP',
+    useCustomLogo: shopConfig?.useCustomLogo ?? false,
+    logoUrl: shopConfig?.logoUrl || '',
+    logoOriginalUrl: shopConfig?.logoOriginalUrl || '',
+    logoBgRemoval: shopConfig?.logoBgRemoval || 'none',
+    logoPosition: shopConfig?.logoPosition || 'left',
+    logoSize: shopConfig?.logoSize ?? 40,
     phone: shopConfig?.phone || '(11) 99999-2525',
     address: shopConfig?.address || 'Av. Principal, 1000 - Centro',
     instagram: shopConfig?.instagram || '@jadsonbarber',
@@ -270,6 +276,95 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
 
   const [isSavingConfig, setIsSavingConfig] = useState(false);
   const [configSuccessMsg, setConfigSuccessMsg] = useState('');
+
+  // Logo background removal utility (Canvas-based)
+  const processLogoBackground = (
+    dataUrl: string,
+    mode: 'none' | 'remove-black' | 'remove-white'
+  ): Promise<string> => {
+    return new Promise((resolve) => {
+      if (!dataUrl || mode === 'none') {
+        resolve(dataUrl);
+        return;
+      }
+
+      const img = new Image();
+      img.crossOrigin = 'Anonymous';
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        canvas.width = img.width;
+        canvas.height = img.height;
+        const ctx = canvas.getContext('2d');
+        if (!ctx) {
+          resolve(dataUrl);
+          return;
+        }
+
+        ctx.drawImage(img, 0, 0);
+        const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        const data = imageData.data;
+
+        for (let i = 0; i < data.length; i += 4) {
+          const r = data[i];
+          const g = data[i + 1];
+          const b = data[i + 2];
+
+          if (mode === 'remove-black') {
+            if (r <= 45 && g <= 45 && b <= 45) {
+              data[i + 3] = 0;
+            }
+          } else if (mode === 'remove-white') {
+            if (r >= 210 && g >= 210 && b >= 210) {
+              data[i + 3] = 0;
+            }
+          }
+        }
+
+        ctx.putImageData(imageData, 0, 0);
+        resolve(canvas.toDataURL('image/png'));
+      };
+      img.onerror = () => resolve(dataUrl);
+      img.src = dataUrl;
+    });
+  };
+
+  const handleLogoFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = async (event) => {
+      const rawDataUrl = event.target?.result as string;
+      if (rawDataUrl) {
+        const mode = configFormData.logoBgRemoval || 'none';
+        const processed = await processLogoBackground(rawDataUrl, mode);
+        setConfigFormData((prev) => ({
+          ...prev,
+          useCustomLogo: true,
+          logoOriginalUrl: rawDataUrl,
+          logoUrl: processed,
+        }));
+      }
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleLogoBgRemovalChange = async (mode: 'none' | 'remove-black' | 'remove-white') => {
+    const sourceUrl = configFormData.logoOriginalUrl || configFormData.logoUrl || '';
+    if (sourceUrl) {
+      const processed = await processLogoBackground(sourceUrl, mode);
+      setConfigFormData((prev) => ({
+        ...prev,
+        logoBgRemoval: mode,
+        logoUrl: processed,
+      }));
+    } else {
+      setConfigFormData((prev) => ({
+        ...prev,
+        logoBgRemoval: mode,
+      }));
+    }
+  };
 
   useEffect(() => {
     if (shopConfig) {
@@ -2447,6 +2542,202 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
           )}
 
           <form onSubmit={handleSaveConfigSubmit} className="space-y-8">
+            {/* Bloco 0: Logomarca no Cabeçalho (Substituição por Imagem 500x500) */}
+            <div className="space-y-5 rounded-2xl border border-amber-500/40 bg-gradient-to-br from-amber-500/10 via-zinc-900/90 to-zinc-950 p-5 shadow-lg shadow-amber-500/5">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-amber-500/20 pb-4">
+                <h4 className="text-xs font-black text-amber-400 uppercase tracking-widest flex items-center gap-2">
+                  <ImageIcon className="h-4 w-4" /> Logomarca do Cabeçalho (Substituir Ícone, Nome e Slogan por Imagem 500x500)
+                </h4>
+                
+                <label className="flex items-center gap-2 cursor-pointer bg-zinc-950/80 px-3 py-1.5 rounded-xl border border-amber-500/30 text-xs font-bold text-amber-300 hover:border-amber-400 transition-all shrink-0">
+                  <input
+                    type="checkbox"
+                    checked={configFormData.useCustomLogo || false}
+                    onChange={(e) => setConfigFormData({ ...configFormData, useCustomLogo: e.target.checked })}
+                    className="rounded border-zinc-700 text-amber-500 focus:ring-amber-500 accent-amber-500 h-4 w-4"
+                  />
+                  <span>Ativar Imagem no Cabeçalho</span>
+                </label>
+              </div>
+
+              <p className="text-xs text-zinc-400 leading-relaxed">
+                Carregue uma imagem do seu dispositivo (recomendado <strong className="text-amber-300">500x500 pixels</strong>) para substituir o ícone da tesoura, o nome da barbearia e o slogan no topo do sistema.
+              </p>
+
+              {/* Upload & Controls Grid */}
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
+                {/* Left Column: Device Image Loader & Preview */}
+                <div className="space-y-3">
+                  <label className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider block ml-1">
+                    Imagem da Marca Carregada do Dispositivo (500x500)
+                  </label>
+
+                  <div className="flex flex-col items-center justify-center border-2 border-dashed border-amber-500/30 hover:border-amber-400 rounded-2xl p-4 bg-zinc-950/60 transition-all text-center">
+                    {configFormData.logoUrl ? (
+                      <div className="space-y-3 w-full flex flex-col items-center">
+                        <div className="p-3 bg-zinc-900/90 rounded-xl border border-zinc-800 shadow-inner flex items-center justify-center min-h-[90px] w-full max-w-[280px]">
+                          <img
+                            src={configFormData.logoUrl}
+                            alt="Logo Carregada"
+                            style={{ height: `${Math.min(configFormData.logoSize || 40, 150)}px`, maxHeight: '150px' }}
+                            className="w-auto object-contain transition-all"
+                          />
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <label className="cursor-pointer inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-amber-500/20 text-amber-300 hover:bg-amber-500/30 border border-amber-500/30 text-xs font-bold transition-all">
+                            <Upload className="h-3.5 w-3.5" />
+                            <span>Trocar Imagem</span>
+                            <input
+                              type="file"
+                              accept="image/*"
+                              onChange={handleLogoFileUpload}
+                              className="hidden"
+                            />
+                          </label>
+                          <button
+                            type="button"
+                            onClick={() => setConfigFormData({ ...configFormData, logoUrl: '', logoOriginalUrl: '', useCustomLogo: false })}
+                            className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-red-500/20 text-red-400 hover:bg-red-500/30 border border-red-500/30 text-xs font-bold transition-all cursor-pointer"
+                          >
+                            <Trash2 className="h-3.5 w-3.5" />
+                            <span>Remover</span>
+                          </button>
+                        </div>
+                      </div>
+                    ) : (
+                      <label className="cursor-pointer flex flex-col items-center gap-2 py-4 w-full">
+                        <div className="h-12 w-12 rounded-2xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400">
+                          <Upload className="h-6 w-6" />
+                        </div>
+                        <div>
+                          <p className="text-xs font-bold text-white uppercase tracking-wider">Clique para selecionar imagem</p>
+                          <p className="text-[10px] text-zinc-400">Dimensão ideal: 500x500 px (PNG, JPG, WEBP)</p>
+                        </div>
+                        <input
+                          type="file"
+                          accept="image/*"
+                          onChange={handleLogoFileUpload}
+                          className="hidden"
+                        />
+                      </label>
+                    )}
+                  </div>
+                </div>
+
+                {/* Right Column: Background Removal, Position, Size Controls */}
+                <div className="space-y-4 bg-zinc-950/60 p-4 rounded-2xl border border-zinc-800/80">
+                  
+                  {/* 1. Remoção de Fundo */}
+                  <div className="space-y-1.5">
+                    <label className="text-[10px] font-bold text-amber-400 uppercase tracking-wider block">
+                      Remoção de Fundo da Imagem
+                    </label>
+                    <div className="grid grid-cols-3 gap-2">
+                      <button
+                        type="button"
+                        onClick={() => handleLogoBgRemovalChange('none')}
+                        className={`px-2 py-2 rounded-xl text-[11px] font-bold transition-all border text-center cursor-pointer ${
+                          (configFormData.logoBgRemoval || 'none') === 'none'
+                            ? 'bg-amber-500 text-black border-amber-400 font-extrabold shadow-md shadow-amber-500/20'
+                            : 'bg-zinc-900 text-zinc-300 border-zinc-800 hover:bg-zinc-800'
+                        }`}
+                      >
+                        Manter Original
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleLogoBgRemovalChange('remove-black')}
+                        className={`px-2 py-2 rounded-xl text-[11px] font-bold transition-all border text-center cursor-pointer ${
+                          configFormData.logoBgRemoval === 'remove-black'
+                            ? 'bg-amber-500 text-black border-amber-400 font-extrabold shadow-md shadow-amber-500/20'
+                            : 'bg-zinc-900 text-zinc-300 border-zinc-800 hover:bg-zinc-800'
+                        }`}
+                      >
+                        Remover Fundo Preto
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleLogoBgRemovalChange('remove-white')}
+                        className={`px-2 py-2 rounded-xl text-[11px] font-bold transition-all border text-center cursor-pointer ${
+                          configFormData.logoBgRemoval === 'remove-white'
+                            ? 'bg-amber-500 text-black border-amber-400 font-extrabold shadow-md shadow-amber-500/20'
+                            : 'bg-zinc-900 text-zinc-300 border-zinc-800 hover:bg-zinc-800'
+                        }`}
+                      >
+                        Remover Fundo Branco
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* 2. Posição no Cabeçalho */}
+                  <div className="space-y-1.5">
+                    <label className="text-[10px] font-bold text-amber-400 uppercase tracking-wider block">
+                      Posição da Imagem no Cabeçalho
+                    </label>
+                    <div className="grid grid-cols-3 gap-2">
+                      <button
+                        type="button"
+                        onClick={() => setConfigFormData({ ...configFormData, logoPosition: 'left' })}
+                        className={`px-3 py-2 rounded-xl text-xs font-bold transition-all border flex items-center justify-center gap-1.5 cursor-pointer ${
+                          (configFormData.logoPosition || 'left') === 'left'
+                            ? 'bg-amber-500 text-black border-amber-400 font-extrabold shadow-md shadow-amber-500/20'
+                            : 'bg-zinc-900 text-zinc-300 border-zinc-800 hover:bg-zinc-800'
+                        }`}
+                      >
+                        <span>Lado Esquerdo</span>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setConfigFormData({ ...configFormData, logoPosition: 'center' })}
+                        className={`px-3 py-2 rounded-xl text-xs font-bold transition-all border flex items-center justify-center gap-1.5 cursor-pointer ${
+                          configFormData.logoPosition === 'center'
+                            ? 'bg-amber-500 text-black border-amber-400 font-extrabold shadow-md shadow-amber-500/20'
+                            : 'bg-zinc-900 text-zinc-300 border-zinc-800 hover:bg-zinc-800'
+                        }`}
+                      >
+                        <span>Centro</span>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setConfigFormData({ ...configFormData, logoPosition: 'right' })}
+                        className={`px-3 py-2 rounded-xl text-xs font-bold transition-all border flex items-center justify-center gap-1.5 cursor-pointer ${
+                          configFormData.logoPosition === 'right'
+                            ? 'bg-amber-500 text-black border-amber-400 font-extrabold shadow-md shadow-amber-500/20'
+                            : 'bg-zinc-900 text-zinc-300 border-zinc-800 hover:bg-zinc-800'
+                        }`}
+                      >
+                        <span>Lado Direito</span>
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* 3. Controle de Tamanho */}
+                  <div className="space-y-1.5">
+                    <div className="flex items-center justify-between">
+                      <label className="text-[10px] font-bold text-amber-400 uppercase tracking-wider block">
+                        Controle de Tamanho da Imagem
+                      </label>
+                      <span className="text-xs font-extrabold text-amber-300 bg-amber-500/20 px-2 py-0.5 rounded border border-amber-500/30">
+                        {configFormData.logoSize || 40}px
+                      </span>
+                    </div>
+                    <input
+                      type="range"
+                      min="20"
+                      max="150"
+                      value={configFormData.logoSize || 40}
+                      onChange={(e) => setConfigFormData({ ...configFormData, logoSize: Number(e.target.value) })}
+                      className="w-full accent-amber-500 cursor-pointer h-2 bg-zinc-800 rounded-lg"
+                    />
+                    <p className="text-[10px] text-zinc-400 italic">
+                      * O tamanho da imagem é ajustado sem alterar a altura do cabeçalho.
+                    </p>
+                  </div>
+
+                </div>
+              </div>
+            </div>
+
             {/* Bloco 1: Banner Principal (Hero - Imagem 1) */}
             <div className="space-y-4 rounded-2xl border border-zinc-800 bg-zinc-900/60 p-5">
               <h4 className="text-xs font-black text-amber-400 uppercase tracking-widest flex items-center gap-2">

@@ -1,6 +1,7 @@
 import React from 'react';
 import { Scissors, User, LogOut, ShieldCheck, CalendarCheck2, Radio, Menu } from 'lucide-react';
 import { UserAccount } from '../types';
+import { ShopConfig } from '../services/configuracoes';
 
 interface NavbarProps {
   currentUser: UserAccount | null;
@@ -11,6 +12,7 @@ interface NavbarProps {
   realtimeActive: boolean;
   onOpenAdminSidebar?: () => void;
   onOpenClientDrawer?: () => void;
+  shopConfig?: ShopConfig;
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
@@ -22,28 +24,53 @@ export const Navbar: React.FC<NavbarProps> = ({
   realtimeActive,
   onOpenAdminSidebar,
   onOpenClientDrawer,
+  shopConfig,
 }) => {
+  const isCustomLogo = Boolean(shopConfig?.useCustomLogo && shopConfig?.logoUrl);
+  const logoPosition = shopConfig?.logoPosition || 'left';
+  const logoSize = Math.min(Math.max(shopConfig?.logoSize || 40, 20), 150);
+
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-white/5 bg-[#0A0A0A]/95 backdrop-blur-md">
-      <div className="mx-auto flex max-w-7xl items-center justify-between px-3 py-3 sm:px-6 lg:px-8 gap-2">
+    <header className="sticky top-0 z-50 w-full bg-[#0A0A0A] h-[73px] overflow-visible rounded-b-3xl sm:rounded-b-[2.5rem] shadow-[0_4px_25px_rgba(0,0,0,0.5)] relative">
+      {/* Animated Gold Contour Border (Sides and Rounded Bottom Edge - Completely No Top) */}
+      <div className="absolute -inset-[2px] top-0 rounded-b-3xl sm:rounded-b-[2.5rem] p-[2px] animate-gold-flow pointer-events-none [clip-path:polygon(-10px_10px,calc(100%+10px)_10px,calc(100%+10px)_calc(100%+10px),-10px_calc(100%+10px))] shadow-[0_0_15px_rgba(234,179,8,0.4)]">
+        <div className="w-full h-full bg-[#0A0A0A]/95 backdrop-blur-md rounded-b-[calc(1.5rem-2px)] sm:rounded-b-[calc(2.5rem-2px)]" />
+      </div>
+      
+      <div className="relative z-10 mx-auto flex max-w-7xl items-center justify-between px-3 sm:px-6 lg:px-8 gap-2 h-[73px] overflow-visible">
         
-        {/* Brand Logo */}
-        <button
-          onClick={() => setActiveView('home')}
-          className="flex items-center gap-2 sm:gap-3 text-left transition-opacity hover:opacity-90 focus:outline-none min-w-0 shrink"
-        >
-          <div className="flex h-9 w-9 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-yellow-300 via-yellow-400 to-yellow-500 text-black font-bold text-lg sm:text-xl shadow-[0_0_20px_rgba(234,179,8,0.3)]">
-            <Scissors className="h-4 w-4 sm:h-5 sm:w-5" />
-          </div>
-          <div className="min-w-0">
-            <div className="flex items-center gap-1 font-syne text-sm sm:text-lg font-bold tracking-tight text-white uppercase truncate">
-              JADSON <span className="text-yellow-400">BARBER</span>
-            </div>
-            <p className="text-[9px] sm:text-[10px] font-bold tracking-wider text-gray-400 uppercase truncate">
-              Slim Experience
-            </p>
-          </div>
-        </button>
+        {/* Brand Logo / Custom Image Container */}
+        <div className={`flex items-center min-w-0 shrink overflow-visible h-[52px] relative ${
+          logoPosition === 'center' ? 'flex-1 justify-center' : logoPosition === 'right' ? 'flex-1 justify-end' : ''
+        }`}>
+          <button
+            onClick={() => setActiveView('home')}
+            className="flex items-center gap-2 sm:gap-3 text-left transition-opacity hover:opacity-90 focus:outline-none shrink cursor-pointer relative"
+          >
+            {isCustomLogo ? (
+              <img
+                src={shopConfig?.logoUrl}
+                alt={shopConfig?.shopName || "Logo Barbearia"}
+                style={{ height: `${logoSize}px` }}
+                className="w-auto object-contain transition-all max-w-[240px] sm:max-w-[320px] shrink-0"
+              />
+            ) : (
+              <>
+                <div className="flex h-9 w-9 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-yellow-300 via-yellow-400 to-yellow-500 text-black font-bold text-lg sm:text-xl shadow-[0_0_20px_rgba(234,179,8,0.3)]">
+                  <Scissors className="h-4 w-4 sm:h-5 sm:w-5" />
+                </div>
+                <div className="min-w-0">
+                  <div className="flex items-center gap-1 font-syne text-sm sm:text-lg font-bold tracking-tight text-white uppercase truncate">
+                    {shopConfig?.shopName ? shopConfig.shopName : <>JADSON <span className="text-yellow-400">BARBER</span></>}
+                  </div>
+                  <p className="text-[9px] sm:text-[10px] font-bold tracking-wider text-gray-400 uppercase truncate">
+                    {shopConfig?.shopTagline || 'Slim Experience'}
+                  </p>
+                </div>
+              </>
+            )}
+          </button>
+        </div>
 
         {/* Center Nav Links (Desktop) */}
         <nav className="hidden items-center gap-6 md:flex">
@@ -112,18 +139,6 @@ export const Navbar: React.FC<NavbarProps> = ({
                   {currentUser.role === 'admin' ? 'Administrador' : 'Cliente'}
                 </p>
               </button>
-
-              {/* Menu Button for Logged-In Client/User (Hidden in Admin Panel) */}
-              {activeView !== 'admin' && onOpenClientDrawer && (
-                <button
-                  onClick={onOpenClientDrawer}
-                  title="Abrir Menu Lateral"
-                  className="flex items-center gap-1.5 px-2.5 py-1.5 sm:px-3 sm:py-1.5 rounded-xl border border-yellow-500/40 bg-yellow-500/10 text-yellow-400 hover:border-yellow-400 hover:bg-yellow-500/20 transition-all shadow-[0_0_15px_rgba(234,179,8,0.2)] shrink-0 font-bold text-xs cursor-pointer"
-                >
-                  <Menu className="h-4 w-4" />
-                  <span className="hidden sm:inline uppercase tracking-wider text-[10px]">Menu</span>
-                </button>
-              )}
 
               {currentUser.role === 'admin' && activeView === 'admin' && onOpenAdminSidebar && (
                 <button

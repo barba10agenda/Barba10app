@@ -33,7 +33,7 @@ import { testConnection } from './firebase/testConnection';
 import { logoutUser } from './firebase/auth';
 import { ShopConfig, saveShopConfig } from './services/configuracoes';
 import { Appointment, Service, Barber, BlockedSlot, UserAccount, AppointmentStatus } from './types';
-import { Scissors, Home, CalendarCheck2, ShieldCheck, MapPin, Phone, Instagram, Clock, Sparkles } from 'lucide-react';
+import { Scissors, Home, CalendarCheck2, ShieldCheck, MapPin, Phone, Instagram, Clock, Sparkles, Menu } from 'lucide-react';
 
 export default function App() {
   // Navigation View State
@@ -162,6 +162,7 @@ export default function App() {
         realtimeActive={true}
         onOpenAdminSidebar={() => setIsAdminSidebarOpen(true)}
         onOpenClientDrawer={() => setIsClientDrawerOpen(true)}
+        shopConfig={shopConfig}
       />
 
       {/* Main Container */}
@@ -287,7 +288,9 @@ export default function App() {
 
       {/* Mobile Sticky Bottom Quick Access Bar (hidden on ADM panel) */}
       {activeView !== 'admin' && (
-        <nav className="fixed bottom-0 left-0 right-0 z-40 bg-[#080808]/95 backdrop-blur-xl border-t border-yellow-500/20 px-2 py-1 flex items-center justify-around shadow-[0_-8px_20px_rgba(0,0,0,0.8)] md:hidden h-14">
+        <nav className="fixed bottom-0 left-0 right-0 z-40 bg-[#080808]/95 backdrop-blur-xl border-t border-yellow-500/30 rounded-t-2xl sm:rounded-t-3xl px-2 py-1 flex items-center justify-around shadow-[0_-8px_25px_rgba(0,0,0,0.8)] md:hidden h-14 overflow-hidden">
+          {/* Animated Gold Top Accent */}
+          <div className="absolute top-0 left-0 right-0 h-[2.5px] rounded-t-2xl sm:rounded-t-3xl animate-gold-flow opacity-80 pointer-events-none" />
           <button
             onClick={() => setActiveView('home')}
             className={`flex flex-col items-center justify-center gap-0.5 px-3 py-1 rounded-xl text-[10px] font-bold uppercase tracking-wider transition-all duration-200 cursor-pointer border ${
@@ -323,6 +326,20 @@ export default function App() {
             >
               <CalendarCheck2 className="h-4 w-4" />
               <span>Agenda</span>
+            </button>
+          )}
+
+          {currentUser && (
+            <button
+              onClick={() => setIsClientDrawerOpen(true)}
+              className={`flex flex-col items-center justify-center gap-0.5 px-3 py-1 rounded-xl text-[10px] font-bold uppercase tracking-wider transition-all duration-200 cursor-pointer border ${
+                isClientDrawerOpen
+                  ? 'bg-gradient-to-r from-yellow-400 to-amber-400 text-black border-yellow-300 shadow-[0_0_12px_rgba(234,179,8,0.4)] font-black scale-105'
+                  : 'text-gray-400 border-transparent hover:text-white hover:bg-white/5'
+              }`}
+            >
+              <Menu className="h-4 w-4" />
+              <span>Menu</span>
             </button>
           )}
 

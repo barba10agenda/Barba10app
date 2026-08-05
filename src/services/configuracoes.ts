@@ -11,6 +11,14 @@ export interface ShopConfig {
   openingHours: string;
   primaryColor?: string;
 
+  // Header Logo Replacement Configuration (500x500 image)
+  useCustomLogo?: boolean;
+  logoUrl?: string;
+  logoOriginalUrl?: string;
+  logoBgRemoval?: 'none' | 'remove-black' | 'remove-white';
+  logoPosition?: 'left' | 'center' | 'right';
+  logoSize?: number;
+
   // Client Home Page / Hero Reception Config (Screenshots 1 & 2)
   heroBadge?: string;
   heroTitleLine1?: string;
@@ -30,6 +38,12 @@ export interface ShopConfig {
 export const DEFAULT_SHOP_CONFIG: ShopConfig = {
   shopName: 'JADSON BARBER',
   shopTagline: 'ATENDIMENTO SLIM VIP',
+  useCustomLogo: false,
+  logoUrl: '',
+  logoOriginalUrl: '',
+  logoBgRemoval: 'none',
+  logoPosition: 'left',
+  logoSize: 40,
   phone: '(11) 99999-2525',
   address: 'Av. Principal, 1000 - Centro',
   instagram: '@jadsonbarber',
