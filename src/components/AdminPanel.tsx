@@ -2758,32 +2758,33 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
           />
 
           {/* Left Drawer (Opens from left to right, up to 50% screen width, positioned below header) */}
-          <aside className="relative z-10 w-1/2 min-w-[260px] max-w-[50vw] h-[calc(100vh-73px)] bg-zinc-950 border-r border-amber-500/20 p-4 sm:p-6 flex flex-col justify-between shadow-2xl overflow-y-auto animate-in slide-in-from-left duration-300 ease-out">
-            <div className="space-y-6">
-              {/* Drawer Header */}
-              <div className="flex items-center justify-between border-b border-zinc-800/80 pb-4">
-                <div className="flex items-center gap-3">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-400 font-bold shadow-[0_0_15px_rgba(234,179,8,0.2)]">
-                    <ShieldCheck className="h-5 w-5" />
-                  </div>
-                  <div>
-                    <h2 className="font-syne text-sm font-bold text-white uppercase tracking-wider">
-                      Painel Administrativo
-                    </h2>
-                    <p className="text-[10px] font-bold text-amber-400 uppercase tracking-widest">Menu Lateral</p>
-                  </div>
+          <aside className="relative z-10 w-1/2 min-w-[260px] max-w-[50vw] h-[calc(100vh-73px)] bg-zinc-950 border-r border-amber-500/20 p-4 sm:p-5 flex flex-col shadow-2xl animate-in slide-in-from-left duration-300 ease-out overflow-hidden">
+            {/* Drawer Header (Fixed) */}
+            <div className="flex items-center justify-between border-b border-zinc-800/80 pb-3 shrink-0">
+              <div className="flex items-center gap-3">
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-400 font-bold shadow-[0_0_15px_rgba(234,179,8,0.2)]">
+                  <ShieldCheck className="h-5 w-5" />
                 </div>
-                <button
-                  onClick={() => setSidebarOpen(false)}
-                  className="rounded-xl border border-zinc-800 bg-zinc-900 p-2 text-zinc-400 hover:bg-zinc-800 hover:text-white transition-colors cursor-pointer"
-                >
-                  <X className="h-5 w-5" />
-                </button>
+                <div>
+                  <h2 className="font-syne text-sm font-bold text-white uppercase tracking-wider">
+                    Painel Administrativo
+                  </h2>
+                  <p className="text-[10px] font-bold text-amber-400 uppercase tracking-widest">Menu Lateral</p>
+                </div>
               </div>
+              <button
+                onClick={() => setSidebarOpen(false)}
+                className="rounded-xl border border-zinc-800 bg-zinc-900 p-2 text-zinc-400 hover:bg-zinc-800 hover:text-white transition-colors cursor-pointer"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
 
+            {/* Scrollable Content Body */}
+            <div className="flex-1 overflow-y-auto pr-1 my-3 space-y-4">
               {/* User Account Info Card */}
               {currentUser && (
-                <div className="rounded-2xl border border-amber-500/20 bg-gradient-to-r from-zinc-900 to-zinc-950 p-4 space-y-2">
+                <div className="rounded-2xl border border-amber-500/20 bg-gradient-to-r from-zinc-900 to-zinc-950 p-3.5 space-y-1.5">
                   <div className="flex items-center justify-between">
                     <span className="text-[10px] text-amber-400 font-bold uppercase tracking-widest flex items-center gap-1">
                       <User className="h-3 w-3" /> Conta Administrador
@@ -2964,34 +2965,17 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                   </button>
                 </nav>
               </div>
-
-              {/* Indicators Summary */}
-              <div className="rounded-2xl border border-zinc-800 bg-zinc-900/50 p-4 space-y-2">
-                <span className="text-[10px] font-extrabold text-zinc-500 uppercase tracking-widest block">
-                  Resumo do Dia
-                </span>
-                <div className="grid grid-cols-2 gap-2">
-                  <div className="bg-zinc-950 p-2.5 rounded-xl border border-zinc-800/80">
-                    <span className="text-[10px] text-zinc-500 block font-bold uppercase">Hoje</span>
-                    <strong className="text-white text-sm font-syne">{todayAppointments.length} clientes</strong>
-                  </div>
-                  <div className="bg-zinc-950 p-2.5 rounded-xl border border-zinc-800/80">
-                    <span className="text-[10px] text-zinc-500 block font-bold uppercase">Receita</span>
-                    <strong className="text-emerald-400 text-sm font-syne">R$ {totalRevenue.toFixed(0)}</strong>
-                  </div>
-                </div>
-              </div>
             </div>
 
-            {/* Footer Area with Moved "Sair da Conta" Button */}
-            <div className="pt-6 border-t border-zinc-800 space-y-3">
+            {/* Footer Area with Fixed "Sair da Conta" Button */}
+            <div className="pt-3 border-t border-zinc-800 shrink-0">
               {onLogout && (
                 <button
                   onClick={() => {
                     setSidebarOpen(false);
                     onLogout();
                   }}
-                  className="w-full flex items-center justify-center gap-2 rounded-xl border border-red-500/30 bg-red-500/10 hover:bg-red-500/20 py-3 text-xs font-bold text-red-400 hover:text-red-300 hover:border-red-500/50 transition-all uppercase tracking-wider cursor-pointer"
+                  className="w-full flex items-center justify-center gap-2 rounded-xl border border-red-500/40 bg-red-500/10 hover:bg-red-500/20 py-2.5 text-xs font-bold text-red-400 hover:text-red-300 hover:border-red-500/60 transition-all uppercase tracking-wider cursor-pointer shadow-[0_0_15px_rgba(239,68,68,0.15)]"
                 >
                   <LogOut className="h-4 w-4" />
                   <span>Sair da Conta</span>
