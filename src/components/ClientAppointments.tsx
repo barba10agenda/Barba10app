@@ -161,18 +161,22 @@ export const ClientAppointments: React.FC<ClientAppointmentsProps> = ({
     return hasBooking || isBlocked || inLunch;
   };
 
+  const visibleRescheduleSlots = rescheduleDate
+    ? allTimeSlots.filter((t) => !isPastTimeSlot(rescheduleDate, t))
+    : [];
+
   const rescheduleTurnos = [
     {
       id: 'manha',
       label: 'Manhã',
       icon: '☀️',
-      slots: allTimeSlots.filter((t) => parseInt(t.split(':')[0], 10) < 12),
+      slots: visibleRescheduleSlots.filter((t) => parseInt(t.split(':')[0], 10) < 12),
     },
     {
       id: 'tarde',
       label: 'Tarde',
       icon: '🌤️',
-      slots: allTimeSlots.filter((t) => {
+      slots: visibleRescheduleSlots.filter((t) => {
         const h = parseInt(t.split(':')[0], 10);
         return h >= 12 && h < 18;
       }),
@@ -181,7 +185,7 @@ export const ClientAppointments: React.FC<ClientAppointmentsProps> = ({
       id: 'noite',
       label: 'Noite',
       icon: '🌙',
-      slots: allTimeSlots.filter((t) => parseInt(t.split(':')[0], 10) >= 18),
+      slots: visibleRescheduleSlots.filter((t) => parseInt(t.split(':')[0], 10) >= 18),
     },
   ].filter((t) => t.slots.length > 0);
 
