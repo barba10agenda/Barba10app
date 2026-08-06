@@ -50,7 +50,7 @@ export const ClientDrawer: React.FC<ClientDrawerProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex justify-start bg-black/80 backdrop-blur-sm animate-in fade-in duration-200">
+    <div className="fixed top-[73px] bottom-0 left-0 right-0 z-40 flex justify-start bg-black/80 backdrop-blur-sm animate-in fade-in duration-200">
       {/* Backdrop click */}
       <div className="absolute inset-0" onClick={onClose} />
 

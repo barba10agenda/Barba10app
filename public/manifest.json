@@ -1,0 +1,31 @@
+{
+  "short_name": "Jadson Barber",
+  "name": "Jadson Barber - Agendamento & Gestão Slim",
+  "description": "Barbearia Jadson Barber - Atendimento Slim VIP e Agendamentos",
+  "icons": [
+    {
+      "src": "/scissors-icon.svg",
+      "type": "image/svg+xml",
+      "sizes": "192x192 512x512",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icon-192.png",
+      "type": "image/png",
+      "sizes": "192x192",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icon-512.png",
+      "type": "image/png",
+      "sizes": "512x512",
+      "purpose": "any maskable"
+    }
+  ],
+  "start_url": "/",
+  "background_color": "#0A0A0A",
+  "theme_color": "#0A0A0A",
+  "display": "standalone",
+  "orientation": "portrait",
+  "scope": "/"
+}
